@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from game.game_interface import GameInterface
 
 
-class NimStateManager(GameInterface):
+class Nim(GameInterface):
     def __init__(self, initial_state, max_take=3):
         self.state = initial_state  # initial_state should be a list of integers representing piles
         self.max_take = max_take

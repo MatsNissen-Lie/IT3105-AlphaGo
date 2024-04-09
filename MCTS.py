@@ -40,6 +40,11 @@ class MCTS:
         self.critic_confidence = 0.3  # Starting value
 
     def select_node(self):
+        """
+        This method selects the best node to explore based on the UCB1 formula.
+        """
+        # kanskje denne metoden skal bruke Anet til å velge hvilken node vi skal gå til. Dette kan være en måte å bruke Anet som en actor i MCTS
+        # git det mening å bruke UCB1 her og anet i rollout?
         node = self.root
         while node.children:
             log_parent_visits = math.log(node.visits)
@@ -59,7 +64,17 @@ class MCTS:
 
     def simulate(self, node):
         # Use the critic to evaluate the node
+
+        # her kan du gjør en rollout med Anet som actor eller en critic med Anet og spare deg for rollout.
         return self.critic.evaluate(node.state)
+
+    def rollout(self, node):
+        # Implement the rollout logic
+        # I want a rollout that is not completely random, but rather uses the critic to guide the search from the nural network as an actor.
+        # Greedy epsilon policy
+        # I will use the Anet to guide the search in the rollout with a probability of (1 - epsilon)
+
+        pass
 
     def backpropagate(self, node, value):
         while node is not None:

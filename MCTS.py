@@ -13,6 +13,8 @@ class Node:
         self.value = 0  # Value from critic
         self.visits = 0
         self.c = 1.4  # Exploration parameter
+        self.wins = 0  # Number of wins
+        # self.loss = 0  # Number of losses
 
     def is_terminal(self):
         # Implement a method to check if the node is at a terminal state
@@ -26,9 +28,11 @@ class Node:
         child_node = Node(child_state, self)
         self.children.append(child_node)
 
-    def update(self, result):
+    def update(self, result, current_player):
         self.value += (result - self.value) / (self.visits + 1)
         self.visits += 1
+        if self.state.get_player_turn() == current_player:
+            self.wins += result  # TODO: maybe change this. It's not clear what the current_player is
 
     def ucb1_score(self, total_parent_visits):
         if self.visits == 0:  # Assign a high score to unvisited nodes for exploration
@@ -39,10 +43,10 @@ class Node:
 
 
 class MCTS:
-    def __init__(self, neural_net, iteration_limit, game, M):
+    def __init__(self, neural_net, iteration_limit, game, M=500):
         self.root: Node = None
         self.iteration_limit = iteration_limit
-        self.M = 10  # Number of rollouts
+        self.M = M  # Number of rollouts
         self.NN = neural_net
         self.NN_confidence = 0.3  # Starting value
 
@@ -73,9 +77,25 @@ class MCTS:
 
     def simulate(self, node):
         # Use the critic to evaluate the node
-
         # her kan du gjør en rollout med Anet som actor eller en critic med Anet og spare deg for rollout.
-        return self.NN.evaluate(node.state)
+        """
+        Perform 500 rollouts from the given node and average their results.
+
+        Args:
+        node (Node): The node from which the rollouts start.
+
+        Returns:
+        float: The average value of the 500 rollouts.
+        """
+        total_value = 0
+        num_rollouts = 500
+
+        for _ in range(num_rollouts):
+            value = self.rollout(node)
+            total_value += value
+
+        average_value = total_value / num_rollouts
+        return average_value
 
     def rollout(self, node: Node, epsilon=0.1, isRandom=True):
         """
@@ -143,5 +163,5 @@ class Critic:
 
 
 mcts = MCTS(None, None, Hex())
-mcts.game.print_board()
+# mcts.game.print_board()
 print(mcts.rollout(mcts.root))

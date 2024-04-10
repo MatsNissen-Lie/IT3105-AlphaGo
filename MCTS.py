@@ -1,11 +1,12 @@
+import copy
 import math
 import random
-
 from typing import Optional, Sequence
+from game.hex import Hex
 
 
 class Node:
-    def __init__(self, state, parent=None):
+    def __init__(self, state: Hex, parent=None):
         self.state = state
         self.parent = parent
         self.children = []
@@ -15,6 +16,10 @@ class Node:
     def is_terminal(self):
         # Implement a method to check if the node is at a terminal state
         return self.state.is_terminal()
+
+    def check_winner(self):
+        winner = self.state.check_win()
+        return winner if winner != 2 else -1
 
     def add_child(self, child_state):
         child_node = Node(child_state, self)
@@ -33,11 +38,14 @@ class Node:
 
 
 class MCTS:
-    def __init__(self, critic, iteration_limit):
+    def __init__(self, neural_net, iteration_limit, game, M):
         self.root: Node = None
-        self.critic = critic
         self.iteration_limit = iteration_limit
-        self.critic_confidence = 0.3  # Starting value
+        self.M = 10  # Number of rollouts
+        self.NN = neural_net
+        self.NN_confidence = 0.3  # Starting value
+
+        self.game = game
 
     def select_node(self):
         """
@@ -66,17 +74,35 @@ class MCTS:
         # Use the critic to evaluate the node
 
         # her kan du gjør en rollout med Anet som actor eller en critic med Anet og spare deg for rollout.
-        return self.critic.evaluate(node.state)
+        return self.NN.evaluate(node.state)
 
-    def rollout(self, node):
-        # Implement the rollout logic
-        # I want a rollout that is not completely random, but rather uses the critic to guide the search from the nural network as an actor.
-        # Greedy epsilon policy
-        # I will use the Anet to guide the search in the rollout with a probability of (1 - epsilon)
+    def rollout(self, node: Node, epsilon=0.1, isRandom=True):
+        """
+        Perform a rollout from the given node using an epsilon-greedy strategy.
 
-        pass
+        Args:
+        node (Node): The node from which the rollout starts.
+        epsilon (float): The probability of taking a random action.
 
-    def backpropagate(self, node, value):
+        Returns:
+        float: The estimated value of the node.
+        """
+        current_state: Hex = node.state.clone()
+        while not current_state.is_terminal():
+            possible_moves = current_state.get_legal_moves()
+            if isRandom or random.random() < epsilon:
+                # Exploration: choose a random move
+                move = random.choice(possible_moves)
+            else:
+                # Exploitation: choose the best move as suggested by the actor (neural network)
+                move = self.NN.predict_best_move(current_state, possible_moves)
+
+            current_state = current_state.make_move(move)
+
+        winner = current_state.check_win()
+        return winner if winner != 2 else -1
+
+    def backpropagate(self, node: Node, value):
         while node is not None:
             node.update(value)
             node = node.parent
@@ -104,12 +130,17 @@ class MCTS:
         threshold = 0.75  # Performance threshold (e.g., 75% accuracy)
         # This is a simplistic adjustment logic; you might want a more sophisticated method
         if critic_accuracy > threshold:  # Define a suitable threshold
-            self.critic_confidence = min(self.critic_confidence + increment, 1.0)
+            self.NN_confidence = min(self.NN_confidence + increment, 1.0)
         else:
-            self.critic_confidence = max(self.critic_confidence - decrement, 0.0)
+            self.NN_confidence = max(self.NN_confidence - decrement, 0.0)
 
 
 class Critic:
     def evaluate(self, state):
         # Implement the evaluation logic (e.g., a neural network model)
-        pass
+        return random.random()  # Dummy value for illustration
+
+
+mcts = MCTS(None, None, Hex())
+mcts.game.print_board()
+print(mcts.rollout(mcts.root))

@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 
 
@@ -157,6 +158,13 @@ class Hex:
         nn_input = (stacked_channels, game_state_info)
 
         return nn_input
+
+    # make a clone of the board
+    def clone(self):
+        clone = Hex(self.board_size)
+        clone.board = np.copy(self.board)
+        clone.player_turn = self.player_turn
+        return clone
 
 
 # Uncomment to test the game setup

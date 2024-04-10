@@ -12,6 +12,7 @@ class Node:
         self.children = []
         self.value = 0  # Value from critic
         self.visits = 0
+        self.c = 1.4  # Exploration parameter
 
     def is_terminal(self):
         # Implement a method to check if the node is at a terminal state

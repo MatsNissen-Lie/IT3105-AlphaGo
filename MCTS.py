@@ -2,11 +2,12 @@ import copy
 import math
 import random
 from typing import Optional, Sequence
+from game.game_interface import GameInterface
 from game.hex import Hex
 
 
 class Node:
-    def __init__(self, state: Hex, parent=None):
+    def __init__(self, state: GameInterface, parent=None):
         self.state = state
         self.parent = parent
         self.children = []
@@ -63,8 +64,8 @@ class MCTS:
 
     def expand(self, node):
         # Get the possible moves from the game state
-        possible_moves = self.game.get_possible_moves(node.state)
-        random.shuffle(possible_moves)
+        possible_moves = self.game(node.state)
+        # random.shuffle(possible_moves)
         # TODO: Vi kan bruke Anet til å velge hvilke moves vi skal legge til i treet!
         for move in possible_moves:
             new_state = self.game.make_move(node.state, move)
@@ -105,7 +106,7 @@ class MCTS:
         Returns:
         float: The estimated value of the node.
         """
-        current_state: Hex = node.state.clone()
+        current_state: GameInterface = node.state.clone()
         while not current_state.is_terminal():
             possible_moves = current_state.get_legal_moves()
             if isRandom or random.random() < epsilon:

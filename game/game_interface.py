@@ -24,6 +24,14 @@ class GameInterface(ABC):
         pass
 
     @abstractmethod
+    def check_win(self, state):
+        """
+        Check if the game is over for the given state.
+        Returns 1 if player 1 wins, 2 if player 2 wins, and 0 if it's a draw.
+        """
+        pass
+
+    @abstractmethod
     def get_nn_input(self, state):
         """
         Prepare and return the neural network input for the given state.

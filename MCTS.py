@@ -162,6 +162,7 @@ class Critic:
         return random.random()  # Dummy value for illustration
 
 
-mcts = MCTS(None, None, Hex())
+game = Hex(7)
+mcts = MCTS(None, None, game)
 # mcts.game.print_board()
-print(mcts.rollout(mcts.root))
+# print(mcts.rollout(mcts.root))

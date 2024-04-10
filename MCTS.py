@@ -1,9 +1,9 @@
-import copy
 import math
 import random
 from typing import Optional, Sequence
 from game.game_interface import GameInterface
 from game.hex import Hex
+from game.nim import Nim
 
 
 class Node:
@@ -37,6 +37,8 @@ class Node:
         if self.visits == 0:  # Assign a high score to unvisited nodes for exploration
             return float("inf")
         exploitation = self.value / self.visits
+        print(self.visits)
+        print(total_parent_visits)
         exploration = math.sqrt(math.log(total_parent_visits) / self.visits)
         return exploitation + self.c * exploration
 
@@ -64,12 +66,13 @@ class MCTS:
 
     def expand(self, node):
         # Get the possible moves from the game state
-        possible_moves = self.game(node.state)
-        # random.shuffle(possible_moves)
+        possible_moves = self.game.get_legal_moves()
+        random.shuffle(possible_moves)
         # TODO: Vi kan bruke Anet til å velge hvilke moves vi skal legge til i treet!
         for move in possible_moves:
-            new_state = self.game.make_move(node.state, move)
-            child_node = Node(state=new_state, parent=node, move=move)
+            new_state = self.game.clone()
+            new_state.make_move(move)
+            child_node = Node(state=new_state, parent=node)
             node.children.append(child_node)
 
     # aka leaf_evaluation
@@ -161,7 +164,6 @@ class Critic:
         return random.random()  # Dummy value for illustration
 
 
-game = Hex(7)
-mcts = MCTS(None, None, game)
-# mcts.game.print_board()
-# print(mcts.rollout(mcts.root))
+mcts = MCTS(None, 10, Nim(20, 7))
+mcts.game.print_piles()
+print(mcts.run(mcts.game))

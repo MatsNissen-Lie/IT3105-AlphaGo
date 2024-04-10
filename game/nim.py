@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from game.game_interface import GameInterface
+import numpy as np
 
 
 class Nim(GameInterface):
@@ -75,7 +76,11 @@ class Nim(GameInterface):
 
     def get_state(self):
         return self.state
-
+    
+    def clone(self):
+        clone = Nim(self.state, self.max_take)
+        clone.player_turn = self.player_turn
+        return clone
 
 # # Example usage
 # initial_state = [3, 4, 5]  # Three piles with 3, 4, and 5 objects respectively

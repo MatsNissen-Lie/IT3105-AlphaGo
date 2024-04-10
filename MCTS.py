@@ -13,7 +13,7 @@ class Node:
         self.value = 0  # Value from critic
         self.visits = 0
         self.c = 1.4  # Exploration parameter
-        self.wins = 0  # Number of wins
+        # self.wins = 0  # Number of wins
         # self.loss = 0  # Number of losses
 
     def is_terminal(self):
@@ -28,16 +28,16 @@ class Node:
         child_node = Node(child_state, self)
         self.children.append(child_node)
 
-    def update(self, result, current_player):
-        self.value += (result - self.value) / (self.visits + 1)
+    def update(self, result):
         self.visits += 1
-        if self.state.get_player_turn() == current_player:
-            self.wins += result  # TODO: maybe change this. It's not clear what the current_player is
+        self.value += (result - self.value) / (self.visits)
+        # if self.state.get_player_turn() == current_player:
+        #     self.wins += result  # TODO: maybe change this. It's not clear what the current_player is
 
     def ucb1_score(self, total_parent_visits):
         if self.visits == 0:  # Assign a high score to unvisited nodes for exploration
             return float("inf")
-        exploitation = self.wins / self.visits
+        exploitation = self.value / self.visits
         exploration = math.sqrt(math.log(total_parent_visits) / self.visits)
         return exploitation + self.c * exploration
 
@@ -67,14 +67,14 @@ class MCTS:
     def expand(self, node):
         # Get the possible moves from the game state
         possible_moves = self.game.get_possible_moves(node.state)
-        random.shuffle(possible_moves)  # Randomize the order of moves
-        # For each move, create a new node and add it to the node's children
-        # TODO: kanskje vi vil velge move i tilfeldig rekkefølge for å unngå bias
+        random.shuffle(possible_moves)
+        # TODO: Vi kan bruke Anet til å velge hvilke moves vi skal legge til i treet!
         for move in possible_moves:
             new_state = self.game.make_move(node.state, move)
             child_node = Node(state=new_state, parent=node, move=move)
             node.children.append(child_node)
 
+    # aka leaf_evaluation
     def simulate(self, node):
         # Use the critic to evaluate the node
         # her kan du gjør en rollout med Anet som actor eller en critic med Anet og spare deg for rollout.

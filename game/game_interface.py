@@ -29,3 +29,10 @@ class GameInterface(ABC):
         Prepare and return the neural network input for the given state.
         """
         pass
+
+    @abstractmethod
+    def clone(self):
+        """
+        Return a deep copy of the game.
+        """
+        pass

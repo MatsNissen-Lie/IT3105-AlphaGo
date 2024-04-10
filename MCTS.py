@@ -58,8 +58,7 @@ class MCTS:
         # git det mening å bruke UCB1 her og anet i rollout?
         node = self.root
         while node.children:
-            log_parent_visits = math.log(node.visits)
-            node = max(node.children, key=lambda c: c.ucb1_score(log_parent_visits))
+            node = max(node.children, key=lambda c: c.ucb1_score(node.visits))
         return node
 
     def expand(self, node):

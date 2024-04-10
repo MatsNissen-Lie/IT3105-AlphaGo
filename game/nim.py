@@ -15,7 +15,7 @@ class Nim(GameInterface):
         that can be taken in one move.
         """
         moves = []
-        for i in range(1, self.max_take+1):
+        for i in range(1, self.max_take + 1):
             moves.append(i)
         return moves
 
@@ -23,8 +23,7 @@ class Nim(GameInterface):
         """
         Check if a move is valid given the current state.
         """
-        return ((move >= 1) and (move <= self.max_take) and (self.max_take-move >= 0))
-
+        return (move >= 1) and (move <= self.max_take) and (self.max_take - move >= 0)
 
     def make_move(self, move):
         """
@@ -32,9 +31,9 @@ class Nim(GameInterface):
         This function returns the new state after the move.
         """
         if self.is_valid_move(move):
-            
+
             self.player_turn = 3 - self.player_turn  # Switch player
-            self.state -= move 
+            self.state -= move
             return self
         else:
             raise Exception()
@@ -50,9 +49,22 @@ class Nim(GameInterface):
         return self.state <= 0
 
     def check_win(self):
+        """
+        The game is over when all piles are empty.
+        Returns 1 if player 1 wins, 2 if player 2 wins, and 0 if it's a draw.
+        """
         if not self.is_terminal():
             return None
         return 3 - self.player_turn
+
+    # def get_result_for_rollout(self):
+    #     """
+    #     The game is over when all piles are empty.
+    #     Returns 1 if player 1 wins, 2 if player 2 wins, and 0 if it's a draw.
+    #     """
+    #     if not self.is_terminal():
+    #         return None
+    #     return 3 - self.player_turn
 
     def get_nn_input(self, state):
         """

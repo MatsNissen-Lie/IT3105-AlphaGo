@@ -30,9 +30,7 @@ class Node:
 
     def update(self, result):
         self.visits += 1
-        self.value += (result - self.value) / (self.visits)
-        # if self.state.get_player_turn() == current_player:
-        #     self.wins += result  # TODO: maybe change this. It's not clear what the current_player is
+        self.value += result
 
     def ucb1_score(self, total_parent_visits):
         if self.visits == 0:  # Assign a high score to unvisited nodes for exploration
@@ -121,6 +119,7 @@ class MCTS:
             current_state = current_state.make_move(move)
 
         winner = current_state.check_win()
+        # TODO: maybe move this logic to the game class
         return winner if winner != 2 else -1
 
     def backpropagate(self, node: Node, value):

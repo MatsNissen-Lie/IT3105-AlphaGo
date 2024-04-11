@@ -4,11 +4,9 @@ from typing import Optional, Sequence
 
 if __name__ == "__main__":
     import sys
+    from os.path import dirname
 
-    curr_path = sys.path[0]
-    remove_last = curr_path.rfind("/")
-    root_path = curr_path[:remove_last]
-    print(root_path)
+    root_path = dirname(sys.path[0])
     sys.path.append(root_path)
 
 from game.game_interface import GameInterface
@@ -17,11 +15,8 @@ from game.nim import Nim
 from tree_search.policy import DefaultPolicy, TreePlolicy
 from typing import List
 
-# from mcts.policy import DefaultPolicy, TreePlolicy
-
 
 class Node:
-
     def __init__(self, state: GameInterface, parent=None):
         self.state = state
         self.parent: Node | None = parent
@@ -132,7 +127,6 @@ class MCTS:
             node = node.parent
 
     def run(self, initial_state):
-
         self.root = Node(initial_state)
         for _ in range(self.iteration_limit):
             node = self.select_node()

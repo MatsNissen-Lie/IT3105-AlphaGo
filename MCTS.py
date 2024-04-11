@@ -4,13 +4,15 @@ from typing import Optional, Sequence
 from game.game_interface import GameInterface
 from game.hex import Hex
 from game.nim import Nim
+from typing import List
 
 
 class Node:
+
     def __init__(self, state: GameInterface, parent=None):
         self.state = state
-        self.parent = parent
-        self.children = []
+        self.parent: Node | None = parent
+        self.children: List["Node"] = []
         self.value = 0  # Value from critic
         self.visits = 0
         self.c = 1.4  # Exploration parameter

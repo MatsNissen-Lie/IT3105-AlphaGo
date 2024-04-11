@@ -1,4 +1,5 @@
 import copy
+from typing import Tuple
 import numpy as np
 
 
@@ -48,7 +49,8 @@ class Hex:
 
         return False
 
-    def make_move(self, row, col):
+    def make_move(self, move: Tuple[int, int]):
+        row, col = move
         if self.is_valid_move(row, col):
             self.board[row][col] = self.player_turn
             self.player_turn = 3 - self.player_turn  # Switch player

@@ -1,24 +1,25 @@
 from abc import ABC, abstractmethod
+from typing import List, Literal, Tuple
 
 
 class GameInterface(ABC):
 
     @abstractmethod
-    def get_legal_moves(self, state):
+    def get_legal_moves(self) -> List[Tuple[int, int]]:
         """
         Return a list of all legal moves from the given state.
         """
         pass
 
     @abstractmethod
-    def get_player(self, state):
+    def get_player(self, state) -> Literal[1, 2]:
         """
         Return the current player for the given state.
         """
         pass
 
     @abstractmethod
-    def make_move(self, state, move):
+    def make_move(self, move: Tuple[int, int]):
         """
         Apply a move to the state and return the new state.
         """

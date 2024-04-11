@@ -1,15 +1,13 @@
+from lib2to3.pytree import Node
 import random
 
 import numpy as np
-from mcts.MCTS import Node
 from game.game_interface import GameInterface
 
 
 class TreePlolicy:
 
-    def __init__(
-        self,
-    ):
+    def __init__(self):
         # self.node = node
         # self.root = node
         self.c = 1.4

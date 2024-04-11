@@ -1,3 +1,4 @@
+import copy
 import random
 from typing import Optional, Sequence
 
@@ -116,7 +117,7 @@ class MCTS:
         Returns:
         float: The estimated value of the node.
         """
-        root_node: Node = node.clone()
+        root_node: Node = copy.deepcopy(node)
         simulation = DefaultPolicy()
         terminal_state = simulation(root_node)
         winner = terminal_state.check_win()
@@ -125,15 +126,14 @@ class MCTS:
     def backpropagate(self, node: Node, value):
         while node is not None:
             node.update(value)
-            print(node.state.state)
-            print(node.state.player_turn)
-            print(node.value)
+            # print("state:",node.state.state)
+            # print("player turn: ",node.state.player_turn)
+            # print("value:",node.value)
             node = node.parent
 
     def run(self, initial_state):
 
         self.root = Node(initial_state)
-        self.tree_policy = TreePlolicy(self.root)
         for _ in range(self.iteration_limit):
             node = self.select_node()
             if not node.is_terminal():
@@ -148,7 +148,7 @@ class MCTS:
         # get children from root node and order them by visits
         moves = []
         for child in self.root.children:
-            moves.append((child.state, child.visits))
+            moves.append((child.state.state, child.visits))
         return moves
 
     # jeg vil gjøre et approch der vi begynner med å gjøre rollouts også gir vi mer og mer tillit til modellen vår etterhvert som vi har gjort flere rollouts
@@ -170,6 +170,6 @@ class Critic:
         return random.random()  # Dummy value for illustration
 
 
-mcts = MCTS(None, 10, Nim(20, 7))
+mcts = MCTS(None, 10, Nim(9, 8))
 mcts.game.print_piles()
 print(mcts.run(mcts.game))

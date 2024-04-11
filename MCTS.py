@@ -37,8 +37,6 @@ class Node:
         if self.visits == 0:  # Assign a high score to unvisited nodes for exploration
             return float("inf")
         exploitation = self.value / self.visits
-        print(self.visits)
-        print(total_parent_visits)
         exploration = math.sqrt(math.log(total_parent_visits) / self.visits)
         return exploitation + self.c * exploration
 
@@ -128,6 +126,9 @@ class MCTS:
     def backpropagate(self, node: Node, value):
         while node is not None:
             node.update(value)
+            print(node.state.state)
+            print(node.state.player_turn)
+            print(node.value)
             node = node.parent
 
     def run(self, initial_state):

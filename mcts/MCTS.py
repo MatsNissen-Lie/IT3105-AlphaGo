@@ -5,7 +5,7 @@ from game.game_interface import GameInterface
 from game.hex import Hex
 from game.nim import Nim
 from typing import List
-from policy1 import DefaultPolicy, TreePlolicy
+from mcts.policy import DefaultPolicy, TreePlolicy
 
 
 class Node:

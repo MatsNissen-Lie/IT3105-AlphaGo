@@ -1,7 +1,7 @@
 import random
 
 import numpy as np
-from MCTS import Node
+from mcts.MCTS import Node
 from game.game_interface import GameInterface
 
 

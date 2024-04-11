@@ -10,6 +10,9 @@ class Hex:
         self.board = np.zeros((board_size, board_size))
         self.player_turn = 1
 
+    def get_player(self):
+        return self.player_turn
+
     def is_valid_move(self, row, col):
         return (
             0 <= row < self.board_size
@@ -38,7 +41,9 @@ class Hex:
             return True
 
         # Check if there are any legal moves left
+        # Is this necessary? There be a winner before the board is full in hex
         if not self.get_legal_moves():
+            print("No legal moves left. This should never happen.")
             return True
 
         return False

@@ -42,14 +42,14 @@ class Node:
 
 
 class MCTS:
-    def __init__(self, neural_net, iteration_limit, game, M=500):
+    def __init__(self, neural_net, iteration_limit, game: GameInterface, M=500):
         self.root: Node = None
         self.iteration_limit = iteration_limit
         self.M = M  # Number of rollouts
         self.NN = neural_net
         self.NN_confidence = 0.3  # Starting value
-
         self.game = game
+        self.player = game.get_player()
 
     def select_node(self):
         """
@@ -62,7 +62,7 @@ class MCTS:
             node = max(node.children, key=lambda c: c.ucb1_score(node.visits))
         return node
 
-    def expand(self, node):
+    def expand(self, node: Node):
         # Get the possible moves from the game state
         possible_moves = self.game.get_legal_moves()
         random.shuffle(possible_moves)
@@ -120,8 +120,8 @@ class MCTS:
             current_state = current_state.make_move(move)
 
         winner = current_state.check_win()
-        # TODO: maybe move this logic to the game class
-        return winner if winner != 2 else -1
+
+        return 1 if winner != self.player else -1
 
     def backpropagate(self, node: Node, value):
         while node is not None:

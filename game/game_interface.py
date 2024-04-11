@@ -10,6 +10,13 @@ class GameInterface(ABC):
         pass
 
     @abstractmethod
+    def get_player(self, state):
+        """
+        Return the current player for the given state.
+        """
+        pass
+
+    @abstractmethod
     def make_move(self, state, move):
         """
         Apply a move to the state and return the new state.

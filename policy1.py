@@ -8,10 +8,11 @@ from game.game_interface import GameInterface
 class TreePlolicy:
 
     def __init__(self, node: Node):
-        self.node = node
+        # self.node = node
+        self.root = node
         self.c = 1.4
 
-    def UCT(self, node) -> float:
+    def UCT(self, node: Node) -> float:
         """
         Calculate the value of the child node.
 
@@ -32,30 +33,45 @@ class TreePlolicy:
         else:
             q_value = node.value / node.visits
         exploration_bonus = self.c * np.sqrt(
-            np.log(self.node.visits + epsilon) / (node.visits + epsilon)
+            # np.log(self.node.visits + epsilon) / (node.visits + epsilon)
+            np.log(node.visits + epsilon)
+            / (node.visits + epsilon)
         )
         return (
             q_value + exploration_bonus
-            if self.node.state.get_player() == 1
+            if node.state.get_player() == 1
             else q_value - exploration_bonus
         )
 
-    def maximize(self):
+    def get_child(self, node: Node) -> Node:
         """
-        Select the child node with the highest value.
+        Select the child node with the highest UCT value.
 
         Returns
         -------
-        max_child_node: Node
-            The child node with the highest value.
+        child_node: Node
+            The child node with the highest UCT value.
         """
-        max_child_node = None
-        max_value = float("-inf")
-        for child in self.node.children:
-            if child.value > max_value:
-                max_value = child.value
-                max_child_node = child
-        return max_child_node
+        if node.children == []:
+            raise ValueError("The node has no children.")
+
+        optimizer = max if node.state.get_player() == 1 else min
+        child_node = optimizer(node.children, key=self.UCT)
+        return child_node
+
+    def __call__(self) -> Node:
+        """
+        Select the child node with the highest UCT value.
+
+        Returns
+        -------
+        child_node: Node
+            The child node with the highest UCT value.
+        """
+        node = self.root
+        while node.children != []:
+            node = self.get_child(node)
+        return node
 
 
 class DefaultPolicy:

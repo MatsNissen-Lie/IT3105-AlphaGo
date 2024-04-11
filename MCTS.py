@@ -6,6 +6,8 @@ from game.hex import Hex
 from game.nim import Nim
 from typing import List
 
+from policy1 import TreePlolicy
+
 
 class Node:
 
@@ -46,26 +48,18 @@ class Node:
 
 class MCTS:
     def __init__(self, neural_net, iteration_limit, game: GameInterface, M=500):
-        self.root: Node = None
+        self.root = Node(game)
+        self.tree_policy = TreePlolicy(self.root)
         self.iteration_limit = iteration_limit
         self.M = M  # Number of rollouts
         self.NN = neural_net
         self.NN_confidence = 0.3  # Starting value
         self.game = game
         self.player = game.get_player()
+        # self.tree_policy = TreePlolicy(self.NN_confidence)
 
     def select_node(self):
-        """
-        This method selects the best node to explore based on the UCB1 formula.
-        """
-        # kanskje denne metoden skal bruke Anet til å velge hvilken node vi skal gå til. Dette kan være en måte å bruke Anet som en actor i MCTS
-        # git det mening å bruke UCB1 her og anet i rollout?
-        node = self.root
-        while node.children:
-            # TODO: fix this for player one and two. This is a simple implementation for player 1
-            # max for palyer 1 and min for player 2
-            node = max(node.children, key=lambda c: c.ucb1_score(node.visits))
-        return node
+        return self.tree
 
     def expand(self, node: Node):
         # Get the possible moves from the game state
@@ -138,7 +132,10 @@ class MCTS:
             node = node.parent
 
     def run(self, initial_state):
+
         self.root = Node(initial_state)
+        self.tree_policy = TreePlolicy(self.root)
+
         for _ in range(self.iteration_limit):
             node = self.select_node()
             if not node.is_terminal():

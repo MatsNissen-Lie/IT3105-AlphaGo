@@ -37,19 +37,19 @@ class Node:
         self.visits += 1
         self.value += result
 
-    def ucb1_score(self, total_parent_visits):
-        if self.visits == 0:  # Assign a high score to unvisited nodes for exploration
-            return float("inf")
-        exploitation = self.value / self.visits
-        exploration = math.sqrt(math.log(total_parent_visits) / self.visits)
-        # TODO: fix this for player one and two. This is a simple implementation for player 1
-        return exploitation + self.c * exploration
+    # def ucb1_score(self, total_parent_visits):
+    #     if self.visits == 0:  # Assign a high score to unvisited nodes for exploration
+    #         return float("inf")
+    #     exploitation = self.value / self.visits
+    #     exploration = math.sqrt(math.log(total_parent_visits) / self.visits)
+    #     # TODO: fix this for player one and two. This is a simple implementation for player 1
+    #     return exploitation + self.c * exploration
 
 
 class MCTS:
     def __init__(self, neural_net, iteration_limit, game: GameInterface, M=500):
         self.root = Node(game)
-        self.tree_policy = TreePlolicy(self.root)
+        self.tree_policy = TreePlolicy()
         self.iteration_limit = iteration_limit
         self.M = M  # Number of rollouts
         self.NN = neural_net
@@ -59,7 +59,7 @@ class MCTS:
         # self.tree_policy = TreePlolicy(self.NN_confidence)
 
     def select_node(self):
-        return self.tree
+        return self.tree_policy.search(self.root)
 
     def expand(self, node: Node):
         # Get the possible moves from the game state

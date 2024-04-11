@@ -7,9 +7,11 @@ from game.game_interface import GameInterface
 
 class TreePlolicy:
 
-    def __init__(self, node: Node):
+    def __init__(
+        self,
+    ):
         # self.node = node
-        self.root = node
+        # self.root = node
         self.c = 1.4
 
     def UCT(self, node: Node) -> float:
@@ -59,7 +61,7 @@ class TreePlolicy:
         child_node = optimizer(node.children, key=self.UCT)
         return child_node
 
-    def __call__(self) -> Node:
+    def search(self, root_node) -> Node:
         """
         Select the child node with the highest UCT value.
 
@@ -68,7 +70,7 @@ class TreePlolicy:
         child_node: Node
             The child node with the highest UCT value.
         """
-        node = self.root
+        node = root_node
         while node.children != []:
             node = self.get_child(node)
         return node

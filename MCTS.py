@@ -5,8 +5,7 @@ from game.game_interface import GameInterface
 from game.hex import Hex
 from game.nim import Nim
 from typing import List
-
-from policy1 import TreePlolicy
+from policy1 import DefaultPolicy, TreePlolicy
 
 
 class Node:
@@ -106,21 +105,10 @@ class MCTS:
         Returns:
         float: The estimated value of the node.
         """
-        current_state: GameInterface = node.state.clone()
-        while not current_state.is_terminal():
-            possible_moves = current_state.get_legal_moves()
-            if isRandom or random.random() < epsilon:
-                # Exploration: choose a random move
-                move = random.choice(possible_moves)
-            else:
-                # Exploitation: choose the best move as suggested by the actor (neural network)
-                # TODO: implement NN.predict_best_move() method
-                move = self.NN.predict_best_move(current_state, possible_moves)
-
-            current_state = current_state.make_move(move)
-
-        winner = current_state.check_win()
-
+        root_node: Node = node.clone()
+        simulation = DefaultPolicy()
+        terminal_state = simulation(root_node)
+        winner = terminal_state.check_win()
         return 1 if winner != self.player else -1
 
     def backpropagate(self, node: Node, value):
@@ -135,7 +123,6 @@ class MCTS:
 
         self.root = Node(initial_state)
         self.tree_policy = TreePlolicy(self.root)
-
         for _ in range(self.iteration_limit):
             node = self.select_node()
             if not node.is_terminal():

@@ -20,6 +20,9 @@ class Nim(GameInterface):
             moves.append(i)
         return moves
 
+    def get_player(self):
+        return self.player_turn
+
     def is_valid_move(self, move):
         """
         Check if a move is valid given the current state.
@@ -67,20 +70,21 @@ class Nim(GameInterface):
     #         return None
     #     return 3 - self.player_turn
 
-    def get_nn_input(self, state):
+    def get_nn_input(self):
         """
         Prepare the state for neural network input. This can vary depending on the NN architecture.
         For simplicity, let's just return the state as is.
         """
-        return state
+        return self.state
 
     def get_state(self):
         return self.state
-    
+
     def clone(self):
         clone = Nim(self.state, self.max_take)
         clone.player_turn = self.player_turn
         return clone
+
 
 # # Example usage
 # initial_state = [3, 4, 5]  # Three piles with 3, 4, and 5 objects respectively

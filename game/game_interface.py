@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 
 class GameInterface(ABC):
+
     @abstractmethod
     def get_legal_moves(self, state):
         """

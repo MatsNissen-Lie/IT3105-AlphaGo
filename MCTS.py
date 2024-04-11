@@ -115,6 +115,7 @@ class MCTS:
                 move = random.choice(possible_moves)
             else:
                 # Exploitation: choose the best move as suggested by the actor (neural network)
+                # TODO: implement NN.predict_best_move() method
                 move = self.NN.predict_best_move(current_state, possible_moves)
 
             current_state = current_state.make_move(move)
@@ -142,9 +143,13 @@ class MCTS:
         # Return the best move based on the search
         return self.best_move()
 
-    def best_move(self):
+    def best_moves(self):
         # Implement logic to choose the best move from the root node
-        pass
+        # get children from root node and order them by visits
+        moves = []
+        for child in self.root.children:
+            moves.append((child.state, child.visits))
+        return moves
 
     # jeg vil gjøre et approch der vi begynner med å gjøre rollouts også gir vi mer og mer tillit til modellen vår etterhvert som vi har gjort flere rollouts
     def update_critic_confidence(self, critic_accuracy):

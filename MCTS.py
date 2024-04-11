@@ -38,6 +38,7 @@ class Node:
             return float("inf")
         exploitation = self.value / self.visits
         exploration = math.sqrt(math.log(total_parent_visits) / self.visits)
+        # TODO: fix this for player one and two. This is a simple implementation for player 1
         return exploitation + self.c * exploration
 
 
@@ -59,6 +60,8 @@ class MCTS:
         # git det mening å bruke UCB1 her og anet i rollout?
         node = self.root
         while node.children:
+            # TODO: fix this for player one and two. This is a simple implementation for player 1
+            # max for palyer 1 and min for player 2
             node = max(node.children, key=lambda c: c.ucb1_score(node.visits))
         return node
 

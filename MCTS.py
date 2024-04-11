@@ -106,7 +106,7 @@ class MCTS:
         Args:
         node (Node): The node from which the rollout starts.
         epsilon (float): The probability of taking a random action.
-
+        isRandom (bool): Whether to use a random policy for the rollout.
         Returns:
         float: The estimated value of the node.
         """
@@ -144,7 +144,7 @@ class MCTS:
             value = self.simulate(node)
             self.backpropagate(node, value)
         # Return the best move based on the search
-        return self.best_move()
+        return self.best_moves()
 
     def best_moves(self):
         # Implement logic to choose the best move from the root node

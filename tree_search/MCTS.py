@@ -118,19 +118,13 @@ class MCTS:
     def draw_tree(
         self,
         child_count=2,
-        object_view=lambda x: (x.get_value(), x.visits, x.UCT()),
+        object_view=lambda x: (
+            x.UTC(),
+            x.visits,
+            "p" + str(x.game_state.get_player()),
+        ),
         depth=3,
     ):
-        # make the lambda funciton only show two desimals
-
-        object_view = lambda x: (
-            round(x.get_value(), 2),
-            "v" + str(x.visits),
-            # x.UCT(True),
-            "move " + str(x.move_from_parent),
-            "rest" + str(x.game_state.state),
-            # "p" + str(x.game_state.get_player()),
-        )
         pt = PrettyPrintTree(
             lambda x: x.samle_children(child_count), object_view, max_depth=depth
         )
@@ -141,4 +135,10 @@ if __name__ == "__main__":
     mcts = MCTS(None, 50, Nim(8, 3))
     res = mcts.run(mcts.root.game_state)
     print(res)
-    mcts.draw_tree(child_count=3, depth=2)
+
+    object_view = lambda x: (
+        round(x.UTC(), 2),
+        "v" + str(x.visits),
+        "p" + str(x.game_state.get_player()),
+    )
+    mcts.draw_tree(child_count=3, depth=2, object_view=object_view)

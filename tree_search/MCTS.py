@@ -7,6 +7,7 @@ if __name__ == "__main__":
     from os.path import dirname
 
     root_path = dirname(sys.path[0])
+    print("root_path:", root_path)
     sys.path.append(root_path)
 
 from game.game_interface import GameInterface
@@ -14,6 +15,10 @@ from game.nim import Nim
 
 from tree_search.policy import DefaultPolicy, TreePlolicy
 from typing import List
+
+from PrettyPrint import PrettyPrintTree
+
+print("en gang ")
 
 
 class Node:
@@ -43,13 +48,16 @@ class Node:
         self.visits += 1
         self.value += result
 
-    # def ucb1_score(self, total_parent_visits):
-    #     if self.visits == 0:  # Assign a high score to unvisited nodes for exploration
-    #         return float("inf")
-    #     exploitation = self.value / self.visits
-    #     exploration = math.sqrt(math.log(total_parent_visits) / self.visits)
-    #     # TODO: fix this for player one and two. This is a simple implementation for player 1
-    #     return exploitation + self.c * exploration
+    def __str__(self):
+        # pices on board
+        pieces = self.state.get_state()
+        # if piceces is a list count the number of pices
+        if isinstance(pieces, list):
+            num = 0
+            for i in pieces.flatten():
+                if i != 0:
+                    num += 1
+        return f"Node: {pieces} Visits: {self.visits} Value: {self.value}"
 
 
 class MCTS:
@@ -92,7 +100,7 @@ class MCTS:
         float: The average value of the 500 rollouts.
         """
         total_value = 0
-        num_rollouts = 500
+        num_rollouts = 10
 
         for _ in range(num_rollouts):
             value = self.rollout(node)
@@ -116,7 +124,9 @@ class MCTS:
         simulation = DefaultPolicy()
         terminal_state = simulation(root_node)
         winner = terminal_state.check_win()
-        return 1 if winner != self.player else -1
+
+        # we minimize for player 2 and maximize for player 1
+        return winner if winner != 2 else -1
 
     def backpropagate(self, node: Node, value):
         while node is not None:
@@ -158,12 +168,9 @@ class MCTS:
             self.NN_confidence = max(self.NN_confidence - decrement, 0.0)
 
 
-class Critic:
-    def evaluate(self, state):
-        # Implement the evaluation logic (e.g., a neural network model)
-        return random.random()  # Dummy value for illustration
+mcts = MCTS(None, 2, Nim(9, 8))
+res = mcts.run(mcts.game)
 
-
-mcts = MCTS(None, 10, Nim(9, 8))
-mcts.game.print_piles()
-print(mcts.run(mcts.game))
+print(res)
+pt = PrettyPrintTree(lambda x: x.children, lambda x: x.value)
+pt(mcts.root)

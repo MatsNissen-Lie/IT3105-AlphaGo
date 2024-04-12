@@ -10,6 +10,9 @@ class Nim(GameInterface):
         self.max_take = max_take
         self.player_turn = 1
 
+    def get_state(self):
+        return self.state
+
     def get_legal_moves(self):
         """
         Generate all legal moves within the constraints of the maximum number of objects

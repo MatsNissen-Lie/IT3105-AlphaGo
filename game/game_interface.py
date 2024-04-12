@@ -3,7 +3,7 @@ from typing import List, Literal, Tuple
 
 
 class GameInterface(ABC):
-
+    # self.board = np.zeros((board_size, board_size))
     @abstractmethod
     def get_legal_moves(self) -> List[Tuple[int, int]]:
         """
@@ -51,5 +51,11 @@ class GameInterface(ABC):
     def clone(self):
         """
         Return a deep copy of the game.
+        """
+        pass
+
+    def get_state(self):
+        """
+        Return the current state of the game.
         """
         pass

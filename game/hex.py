@@ -14,6 +14,9 @@ class Hex:
     def get_player(self):
         return self.player_turn
 
+    def get_state(self):
+        return self.board
+
     def is_valid_move(self, row, col):
         return (
             0 <= row < self.board_size

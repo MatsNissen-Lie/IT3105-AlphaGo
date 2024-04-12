@@ -16,3 +16,5 @@ Balancing exploration and exploitation
 # hvordan definere resultatet av en rollout.
 
 Hvis vinneren er samme player som har sin tur i noden til MCTS, så er resultatet 1. Hvis vinneren er motstanderen, så er resultatet -1. Hvis det er uavgjort, så er resultatet 0.
+
+TODO: make sure that a node is not added to the tree if it is alrady in the tree.

@@ -48,7 +48,7 @@ class GameInterface(ABC):
         pass
 
     @abstractmethod
-    def clone(self):
+    def clone(self) -> "GameInterface":
         """
         Return a deep copy of the game.
         """

@@ -178,33 +178,22 @@ class Hex:
 
 
 # Uncomment to test the game setup
-if False:
+if __name__ == "__main__":
     game = Hex()
+    game.make_move((0, 0))  # Player 1
+    game.make_move((0, 1))  # Player 2
+    game.make_move((1, 0))  # Player 1
+    game.make_move((0, 2))  # Player 2
+    game.make_move((2, 0))  # Player 1
+    game.make_move((0, 3))  # Player 2
+    game.make_move((3, 0))  # Player 1
+    game.make_move((0, 4))  # Player 2
+    game.make_move((4, 0))  # Player 1
+    game.make_move((0, 5))  # Player 2
+    game.make_move((5, 0))  # Player 1
+    game.make_move((0, 6))  # Player 2
+    # Player 1, this should create a winning path from top to bottom
+    game.make_move((6, 0))
     game.print_board()
-    print("Current player:", game.player_turn)
-    game.make_move(0, 0)
-    game.print_board()
-    print("Current player:", game.player_turn)
-
-    game = Hex()
-    game.make_move(0, 0)  # Player 1
-    game.make_move(0, 1)  # Player 2
-    game.make_move(1, 0)  # Player 1
-    game.make_move(0, 2)  # Player 2
-    game.make_move(2, 0)  # Player 1
-    game.make_move(0, 3)  # Player 2
-    game.make_move(3, 0)  # Player 1
-    game.make_move(0, 4)  # Player 2
-    game.make_move(4, 0)  # Player 1
-    game.make_move(0, 5)  # Player 2
-    game.make_move(5, 0)  # Player 1
-    game.make_move(0, 6)  # Player 2
-    game.make_move(
-        6, 0
-    )  # Player 1, this should create a winning path from top to bottom
-
-    print("Board:")
-    game.print_board()
-
     winner = game.check_win()
     print("Winner:", winner)

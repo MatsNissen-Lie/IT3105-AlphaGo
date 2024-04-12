@@ -1,47 +1,14 @@
-from lib2to3.pytree import Node
 import random
-
-import numpy as np
+from tree_search.node import Node
 from game.game_interface import GameInterface
+import numpy as np
+from typing import Tuple
 
 
 class TreePlolicy:
 
     def __init__(self):
-        # self.node = node
-        # self.root = node
-        self.c = 1.4
-
-    def UCT(self, node: Node) -> float:
-        """
-        Calculate the value of the child node.
-
-        Parameters
-        ----------
-        child_node: Node
-            The child node.
-
-        Returns
-        -------
-        value: float
-            The value of the child node.
-        """
-        epsilon = 1
-
-        if node.visits == 0:
-            q_value = 0
-        else:
-            q_value = node.value / node.visits
-        exploration_bonus = self.c * np.sqrt(
-            # np.log(self.node.visits + epsilon) / (node.visits + epsilon)
-            np.log(node.visits + epsilon)
-            / (node.visits + epsilon)
-        )
-        return (
-            q_value + exploration_bonus
-            if node.state.get_player() == 1
-            else q_value - exploration_bonus
-        )
+        pass
 
     def get_child(self, node: Node) -> Node:
         """
@@ -55,11 +22,11 @@ class TreePlolicy:
         if node.children == []:
             raise ValueError("The node has no children.")
 
-        optimizer = max if node.state.get_player() == 1 else min
-        child_node = optimizer(node.children, key=self.UCT)
+        optimizer = max if node.get_state().get_player() == 1 else min
+        child_node = optimizer(node.children, key=lambda x: x.UCT())
         return child_node
 
-    def search(self, root_node) -> Node:
+    def search(self, root_node: Node) -> Tuple[Node, int]:
         """
         Select the child node with the highest UCT value.
 
@@ -69,9 +36,11 @@ class TreePlolicy:
             The child node with the highest UCT value.
         """
         node = root_node
+        depth = 1
         while node.children != []:
             node = self.get_child(node)
-        return node
+            depth += 1
+        return node, depth
 
 
 class DefaultPolicy:
@@ -97,7 +66,7 @@ class DefaultPolicy:
         """
 
         # TODO: The default policy should not add nodes to the tree. It should only simulate the game.
-        curr_state = curr_node.state
+        curr_state = curr_node.game_state
         while not curr_state.is_terminal():
             possible_moves = curr_state.get_legal_moves()
             move = random.choice(possible_moves)

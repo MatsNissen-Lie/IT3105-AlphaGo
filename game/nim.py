@@ -5,7 +5,7 @@ import numpy as np
 
 
 class Nim(GameInterface):
-    def __init__(self, initial_state, max_take):
+    def __init__(self, initial_state: int, max_take: int):
         self.state = initial_state  # initial_state should be a list of integers representing piles
         self.max_take = max_take
         self.player_turn = 1
@@ -18,8 +18,9 @@ class Nim(GameInterface):
         Generate all legal moves within the constraints of the maximum number of objects
         that can be taken in one move.
         """
+        n = min(self.max_take, self.state)
         moves = []
-        for i in range(1, self.max_take + 1):
+        for i in range(1, n + 1):
             moves.append(i)
         return moves
 
@@ -34,18 +35,17 @@ class Nim(GameInterface):
 
     def make_move(self, move):
         """
-        Apply a move to the state. A move is a tuple (pile_index, objects_to_remove).
+        Apply a move to the state. A move is a number of objects to take from the pile.
         This function returns the new state after the move.
         """
         if self.is_valid_move(move):
-
-            self.player_turn = 3 - self.player_turn  # Switch player
             self.state -= move
+            self.player_turn = 3 - self.player_turn  # Switch player
             return self
         else:
             raise Exception()
 
-    def print_piles(self):
+    def print_pile(self):
         # print the piles nicely
         print(self.state)
 
@@ -62,16 +62,7 @@ class Nim(GameInterface):
         """
         if not self.is_terminal():
             return None
-        return 3 - self.player_turn
-
-    # def get_result_for_rollout(self):
-    #     """
-    #     The game is over when all piles are empty.
-    #     Returns 1 if player 1 wins, 2 if player 2 wins, and 0 if it's a draw.
-    #     """
-    #     if not self.is_terminal():
-    #         return None
-    #     return 3 - self.player_turn
+        return self.player_turn
 
     def get_nn_input(self):
         """
@@ -85,16 +76,29 @@ class Nim(GameInterface):
 
     def clone(self):
         clone = Nim(self.state, self.max_take)
-        clone.player_turn = self.player_turn
+        clone.player_turn = int(self.player_turn)
         return clone
 
 
-# # Example usage
-# initial_state = [3, 4, 5]  # Three piles with 3, 4, and 5 objects respectively
-# nim_game = Nim(initial_state)
-# print("Legal moves from initial state:", nim_game.get_legal_moves())
-# new_state = nim_game.make_move(
-#     nim_game.state, (0, 2)
-# )  # Take 2 objects from the first pile
-# print("New state after move:", new_state)
-# print("Is game over?", nim_game.is_terminal(new_state))
+if __name__ == "__main__":
+    # Test the Nim class
+    game = Nim(10, 3)
+    game.print_pile()
+    # moves
+    print(game.get_legal_moves())
+
+    starting_player = game.player_turn
+    print("game.player_turn", starting_player)
+    game.make_move(3)  # player 1
+    assert game.player_turn == 2
+    game.make_move(3)  # player 2
+    assert starting_player == game.player_turn
+    assert game.get_state() == 4
+    moves = game.make_move(3)  # player 1
+    assert len(game.get_legal_moves()) == 1
+    print("last move by", game.player_turn)
+    game.make_move(1)  # palyer 2
+    print("winner", game.check_win())
+    assert game.is_terminal()
+
+    assert game.check_win() == 1

@@ -1,1 +1,1 @@
-from anet import Optimizer, Activation
+from .enums import Optimizer, Activation

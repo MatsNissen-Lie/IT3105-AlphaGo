@@ -78,6 +78,9 @@ class Nim(GameInterface):
         clone.player_turn = int(self.player_turn)
         return clone
 
+    def move_to_str(self, move):
+        return str(move)
+
 
 if __name__ == "__main__":
     # Test the Nim class

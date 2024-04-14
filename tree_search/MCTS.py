@@ -1,24 +1,26 @@
 import copy
 import random
+from config.params import SIMULATIONS
 from game.game_interface import GameInterface
 from game.hex import Hex
 from game.nim import Nim
-from tree_search.policy import DefaultPolicy, TreePlolicy
+from tree_search.policy import DefaultPolicy, TargetPolicy, TreePlolicy
 from tree_search.node import Node
 from PrettyPrint import PrettyPrintTree
 
 
 class MCTS:
-    def __init__(self, neural_net, iteration_limit, game: GameInterface, M=500):
+    def __init__(
+        self,
+        game: GameInterface,
+        neural_net=None,
+        iteration_limit=SIMULATIONS,
+    ):
         self.root = Node(game)
         self.tree_policy = TreePlolicy()
         self.iteration_limit = iteration_limit
-        self.M = M  # Number of rollouts
         self.NN = neural_net
         self.NN_confidence = 0.3  # Starting value
-        # self.game = game
-        # self.player = game.get_player()
-        # self.tree_policy = TreePlolicy(self.NN_confidence)
 
     def select_node(self) -> "Node":
         node, _ = self.tree_policy.search(self.root)
@@ -70,8 +72,13 @@ class MCTS:
         """
         # leaf_node: Node = copy.deepcopy(node)
         leaf_node: Node = node
-        simulation = DefaultPolicy()
-        terminal_state = simulation(leaf_node)
+        if self.anet:
+            policy = TargetPolicy()
+            terminal_state = policy(leaf_node, epsilon)
+        else:
+            policy = DefaultPolicy()
+            terminal_state = policy(leaf_node)
+
         winner = terminal_state.check_win()
         # we minimize for player 2 and maximize for player 1
         return winner if winner != 2 else -1
@@ -81,8 +88,8 @@ class MCTS:
             node.update(value)
             node = node.parent
 
-    def run(self, initial_state):
-        self.root = Node(initial_state)
+    def run(self, root_node: Node) -> "Node":
+        self.root = root_node
         for _ in range(self.iteration_limit):
             # make the loop promt the terminal too continue
             # if _ > 3:
@@ -95,27 +102,16 @@ class MCTS:
             value = self.simulate(node)
             self.backpropagate(node, value)
         # Return the best move based on the search
-        return self.best_moves()
+        return self.best_move()
 
-    def best_moves(self):
+    def best_move(self) -> "Node":
         # Implement logic to choose the best move from the root node
         # get children from root node and order them by visits
         moves = []
         for child in self.root.children:
-            moves.append((child.game_state.get_state(), child.visits))
-        return moves
-
-    # jeg vil gjøre et approch der vi begynner med å gjøre rollouts også gir vi mer og mer tillit til modellen vår etterhvert som vi har gjort flere rollouts
-    def update_critic_confidence(self, critic_accuracy):
-        # Adjust the confidence based on the accuracy
-        increment = 0.02  # Increment value
-        decrement = 0.01  # Decrement value
-        threshold = 0.75  # Performance threshold (e.g., 75% accuracy)
-        # This is a simplistic adjustment logic; you might want a more sophisticated method
-        if critic_accuracy > threshold:  # Define a suitable threshold
-            self.NN_confidence = min(self.NN_confidence + increment, 1.0)
-        else:
-            self.NN_confidence = max(self.NN_confidence - decrement, 0.0)
+            moves.append((child, child.visits))
+        moves.sort(key=lambda x: x[1], reverse=True)
+        return moves[0][0]
 
     def draw_tree(
         self,
@@ -132,19 +128,33 @@ class MCTS:
         )
         pt(self.root)
 
+    # jeg vil gjøre et approch der vi begynner med å gjøre rollouts også gir vi mer og mer tillit til modellen vår etterhvert som vi har gjort flere rollouts
+    def update_critic_confidence(self, critic_accuracy):
+        # Adjust the confidence based on the accuracy
+        increment = 0.02  # Increment value
+        decrement = 0.01  # Decrement value
+        threshold = 0.75  # Performance threshold (e.g., 75% accuracy)
+        # This is a simplistic adjustment logic; you might want a more sophisticated method
+        if critic_accuracy > threshold:  # Define a suitable threshold
+            self.NN_confidence = min(self.NN_confidence + increment, 1.0)
+        else:
+            self.NN_confidence = max(self.NN_confidence - decrement, 0.0)
+
 
 if __name__ == "__main__":
     game = Hex()
     game.go_to_end_game()
+    # game = Nim(8, 3)
     mcts = MCTS(None, 2000, game)
     res = mcts.run(mcts.root.game_state)
-    print(res)
+    # print(res)
 
     object_view = lambda x: (
         round(x.UCT(), 2),
         "v" + str(x.visits),
         game.move_to_str(x.move_from_parent),
+        # str(x.move_from_parent),
         "p" + str(x.game_state.get_player()),
     )
     game.draw_state()
-    mcts.draw_tree(child_count=3, depth=2, object_view=object_view)
+    mcts.draw_tree(child_count=2, depth=2, object_view=object_view)

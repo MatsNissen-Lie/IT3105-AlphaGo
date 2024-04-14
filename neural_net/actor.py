@@ -4,7 +4,9 @@ from config.params import (
     EPSILON_DECAY,
     NUMBER_OF_GAMES,
     REPLAY_BUFFER_SIZE,
+    SAVE_INTERVAL,
     SIMULATIONS,
+    REPLAY_BATCH_SIZE,
 )
 from game.hex import Hex
 from neural_net.anet import ANet
@@ -12,8 +14,13 @@ from tree_search import MCTS
 
 
 class ReplayBuffer:
-    def __init__(self, buffer_size: int = 2048) -> None:
+    def __init__(
+        self,
+        buffer_size: int = REPLAY_BUFFER_SIZE,
+        replay_batch_size: int = REPLAY_BATCH_SIZE,
+    ) -> None:
         self.buffer_size = buffer_size
+        self.replay_batch_size = replay_batch_size
         self.buffer = []
 
     def add(self, state, action, reward, next_state, done):
@@ -21,7 +28,8 @@ class ReplayBuffer:
             self.buffer.pop(0)
         self.buffer.append((state, action, reward, next_state, done))
 
-    def sample(self, batch_size: int = 256):
+    def sample(self):
+        batch_size = min(len(self.buffer), self.replay_batch_size)
         return random.sample(self.buffer, batch_size)
 
     def __len__(self):
@@ -56,21 +64,38 @@ class Actor:
         replay_buffer: ReplayBuffer = ReplayBuffer(REPLAY_BUFFER_SIZE),
         simulations: int = SIMULATIONS,
         number_of_games: int = NUMBER_OF_GAMES,
+        save_interval: int = SAVE_INTERVAL,
     ) -> None:
         self.anet = anet
         self.replay_buffer = replay_buffer
         self.simulations = simulations
         self.number_of_games = number_of_games
+        self.save_interval = save_interval
 
     def epsiolon_decay(self, game_count: int):
         return EPSILON_DECAY ** (game_count)
 
     def play(self):
-        for _ in range(self.number_of_games):
+        for game_number in range(self.number_of_games):
             # for the first iteration epsoilon is 1. No neural network is used. After the first iteration, the epsilon is decayed.
-            epsilon = self.epsiolon_decay(_)
+            epsilon = self.epsiolon_decay(game_number)
             game = Hex(BOARD_SIZE)
             mcts = MCTS(game, self.anet, self.simulations, epsilon)
-
+            root = mcts.get_root()
             while not game.is_terminal():
-                move = mcts.run(game)
+                new_node, move_visits = mcts.run(root)
+                x, D = game.get_nn_input(), game.transform_nn_output(move_visits)
+                self.replay_buffer.add(x, D)
+
+                game.make_move(new_node.move_from_parent)
+                root = new_node
+
+                print(f"\nPlayer {game.get_player()}: {new_node.move_from_parent}")
+                mcts.draw_tree()
+            print(f"Game {game_number} finished. Winner: {game.check_win()}")
+
+            minibatch = self.replay_buffer.sample()
+            self.anet.train_batch(minibatch)
+
+            if (game_number + 1) % self.save_interval == 0:
+                self.anet.save_model()

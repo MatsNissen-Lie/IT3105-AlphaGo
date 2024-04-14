@@ -8,7 +8,6 @@ from neural_net.enums import Activation, Optimizer
 BOARD_SIZE = 7
 TIME_LIMIT = 2
 MAX_TIME_LIMIT = 7
-DATE = "04-28"
 NUM_OF_MODELS = 6
 
 """

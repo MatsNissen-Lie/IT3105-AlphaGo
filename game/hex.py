@@ -1,5 +1,5 @@
 import copy
-from typing import Tuple
+from typing import List, Tuple
 import numpy as np
 
 
@@ -10,9 +10,13 @@ class Hex:
         self.board_size = board_size
         self.board = np.zeros((board_size, board_size))
         self.player_turn = 1
+        self.action = None
 
     def get_player(self):
         return self.player_turn
+
+    def get_previous_action(self):
+        return self.action
 
     def get_state(self):
         return self.board
@@ -60,6 +64,7 @@ class Hex:
         if self.is_valid_move(row, col):
             self.board[row][col] = self.player_turn
             self.player_turn = 3 - self.player_turn  # Switch player
+            self.action = move
             return True
         return False
 
@@ -176,10 +181,27 @@ class Hex:
 
     # make a clone of the board
     def clone(self):
-        clone = Hex(self.board_size)
-        clone.board = np.copy(self.board)
-        clone.player_turn = self.player_turn
+        clone = copy.deepcopy(self)
         return clone
+
+    def transform_nn_output(
+        self, move_visits: List[Tuple[Tuple[int, int], int]]
+    ) -> np.ndarray:
+        """Transform the output of the MCTS into a distribution of visit counts that can be used as targets for traning the neural network.
+
+        Args:
+            move_visits (List[Tuple[Tuple[int, int], int]]): A list of moves and their visit counts.
+
+        Returns:
+            ndarray[float]: A distribution of visit counts for each move on the board.
+        """
+        visit_counts = [0] * self.board_size**2
+        for move, visits in move_visits:
+            index = move[0] * self.board + move[1]
+            visit_counts[index] = visits
+        total_visit_count = sum(visit_counts)
+        distribution = np.array([count / total_visit_count for count in visit_counts])
+        return distribution
 
     def go_to_end_game(self):
         for i in range(self.board_size - 1):

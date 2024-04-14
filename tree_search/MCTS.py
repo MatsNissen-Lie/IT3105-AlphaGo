@@ -1,5 +1,5 @@
-import copy
 import random
+from typing import List, Tuple
 from config.params import SIMULATIONS
 from game.game_interface import GameInterface
 from game.hex import Hex
@@ -21,6 +21,9 @@ class MCTS:
         self.iteration_limit = iteration_limit
         self.NN = neural_net
         self.NN_confidence = 0.3  # Starting value
+
+    def get_root(self):
+        return self.root
 
     def select_node(self) -> "Node":
         node, _ = self.tree_policy.search(self.root)
@@ -88,8 +91,10 @@ class MCTS:
             node.update(value)
             node = node.parent
 
-    def run(self, root_node: Node) -> "Node":
+    def run(self, root_node: Node):
         self.root = root_node
+        self.root.parent = None
+
         for _ in range(self.iteration_limit):
             # make the loop promt the terminal too continue
             # if _ > 3:
@@ -101,8 +106,8 @@ class MCTS:
 
             value = self.simulate(node)
             self.backpropagate(node, value)
-        # Return the best move based on the search
-        return self.best_move()
+
+        return self.best_move(), self.get_move_visits()
 
     def best_move(self) -> "Node":
         # Implement logic to choose the best move from the root node
@@ -112,6 +117,12 @@ class MCTS:
             moves.append((child, child.visits))
         moves.sort(key=lambda x: x[1], reverse=True)
         return moves[0][0]
+
+    def get_move_visits(self) -> List[Tuple[Tuple[int, int], int]]:
+        moves = []
+        for child in self.root.children:
+            moves.append((child.move_from_parent, child.visits))
+        return moves
 
     def draw_tree(
         self,

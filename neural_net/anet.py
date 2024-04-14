@@ -2,8 +2,11 @@
 This module contains a class to build a neural network model by using tf.Keras
 """
 
+import datetime
 from enum import Enum
-from typing import List
+from math import sqrt
+import os
+from typing import List, Tuple
 
 import numpy as np
 from config.params import (
@@ -68,8 +71,26 @@ class ANet:
     def train(self, x_train, y_train, epochs=EPOCHS):
         self.model.fit(x_train, y_train, epochs=epochs)
 
+    def train_batch(self, batch: List[Tuple]):
+        feature_matrix = np.array([])
+        probability_distribution = np.array([])
+        for x, D in batch:
+            feature_matrix.append(x)
+            probability_distribution.append(D)
+        self.train(np.array(feature_matrix), np.array(probability_distribution))
+
     def predict(self, x: np.ndarray):
         return self.model.predict(x)
+
+    def save_model(self):
+        num = 0
+        board_size = sqrt(self.output_shape)
+        date = datetime.now().strftime("%Y-%m-%d")
+        location = f"models/{board_size}x{board_size}/{date}/model_{num}.h5"
+        while os.path.exists(location):
+            num += 1
+            location = f"models/model_{num}.h5"
+        self.model.save(location)
 
     def get_optimizer(self):
         if self.optimizer == Optimizer.ADAGRAD:

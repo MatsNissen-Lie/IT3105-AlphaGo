@@ -1,6 +1,7 @@
 import copy
 import random
 from game.game_interface import GameInterface
+from game.hex import Hex
 from game.nim import Nim
 from tree_search.policy import DefaultPolicy, TreePlolicy
 from tree_search.node import Node
@@ -38,7 +39,7 @@ class MCTS:
         # Use the critic to evaluate the node
         # her kan du gjør en rollout med Anet som actor eller en critic med Anet og spare deg for rollout.
         """
-        Perform 500 rollouts from the given node and average their results.
+        Perform 100 rollouts from the given node and average their results.
 
         Args:
         node (Node): The node from which the rollouts start.
@@ -67,7 +68,8 @@ class MCTS:
         Returns:
         float: The estimated value of the node.
         """
-        leaf_node: Node = copy.deepcopy(node)
+        # leaf_node: Node = copy.deepcopy(node)
+        leaf_node: Node = node
         simulation = DefaultPolicy()
         terminal_state = simulation(leaf_node)
         winner = terminal_state.check_win()
@@ -100,7 +102,7 @@ class MCTS:
         # get children from root node and order them by visits
         moves = []
         for child in self.root.children:
-            moves.append((child.game_state.state, child.visits))
+            moves.append((child.game_state.get_state(), child.visits))
         return moves
 
     # jeg vil gjøre et approch der vi begynner med å gjøre rollouts også gir vi mer og mer tillit til modellen vår etterhvert som vi har gjort flere rollouts
@@ -132,13 +134,17 @@ class MCTS:
 
 
 if __name__ == "__main__":
-    mcts = MCTS(None, 50, Nim(8, 3))
+    game = Hex()
+    game.go_to_end_game()
+    mcts = MCTS(None, 2000, game)
     res = mcts.run(mcts.root.game_state)
     print(res)
 
     object_view = lambda x: (
-        round(x.UTC(), 2),
+        round(x.UCT(), 2),
         "v" + str(x.visits),
+        game.move_to_str(x.move_from_parent),
         "p" + str(x.game_state.get_player()),
     )
+    game.draw_state()
     mcts.draw_tree(child_count=3, depth=2, object_view=object_view)

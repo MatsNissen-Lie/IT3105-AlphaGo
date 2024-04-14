@@ -46,11 +46,14 @@ class Hex:
 
         # Check if there are any legal moves left
         # Is this necessary? There be a winner before the board is full in hex
-        if not self.get_legal_moves():
-            print("No legal moves left. This should never happen.")
-            return True
+        # if not self.get_legal_moves():
+        #     print("No legal moves left. This should never happen.")
+        #     return True
 
         return False
+
+    def is_terminal(self):
+        return self.check_win() != 0
 
     def make_move(self, move: Tuple[int, int]):
         row, col = move
@@ -103,13 +106,7 @@ class Hex:
 
         return False
 
-        # def play(self):
-        #     # Game loop - to be implemented
-        #     pass
-
-        print(self.board)
-
-    def print_board(self):
+    def draw_state(self):
         board = self.board
         column_names = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         rows, cols, indent = len(board), len(board[0]), 0
@@ -132,6 +129,11 @@ class Hex:
             indent += 2
         headings = " " * (indent - 2) + headings
         print(headings)
+
+    def move_to_str(self, move):
+        if move == None:
+            return "Pass"
+        return f"{chr(move[1] + 65)}{move[0] + 1}"
 
     def get_nn_input(self):
         flat_board = self.board.flatten()
@@ -176,24 +178,37 @@ class Hex:
         clone.player_turn = self.player_turn
         return clone
 
+    def go_to_end_game(self):
+        for i in range(self.board_size - 1):
+            for j in range(self.board_size):
+                self.make_move((i, j))
+        self.make_move((6, 6))
+        self.make_move((6, 1))
+
 
 # Uncomment to test the game setup
 if __name__ == "__main__":
     game = Hex()
-    game.make_move((0, 0))  # Player 1
-    game.make_move((0, 1))  # Player 2
-    game.make_move((1, 0))  # Player 1
-    game.make_move((0, 2))  # Player 2
-    game.make_move((2, 0))  # Player 1
-    game.make_move((0, 3))  # Player 2
-    game.make_move((3, 0))  # Player 1
-    game.make_move((0, 4))  # Player 2
-    game.make_move((4, 0))  # Player 1
-    game.make_move((0, 5))  # Player 2
-    game.make_move((5, 0))  # Player 1
-    game.make_move((0, 6))  # Player 2
-    # Player 1, this should create a winning path from top to bottom
-    game.make_move((6, 0))
-    game.print_board()
-    winner = game.check_win()
-    print("Winner:", winner)
+    if False:
+        game.make_move((0, 0))  # Player 1
+        game.make_move((0, 1))  # Player 2
+        game.make_move((1, 0))  # Player 1
+        game.make_move((0, 2))  # Player 2
+        game.make_move((2, 0))  # Player 1
+        game.make_move((0, 3))  # Player 2
+        game.make_move((3, 0))  # Player 1
+        game.make_move((0, 4))  # Player 2
+        game.make_move((4, 0))  # Player 1
+        game.make_move((0, 5))  # Player 2
+        game.make_move((5, 0))  # Player 1
+        game.make_move((0, 6))  # Player 2
+        # Player 1, this should create a winning path from top to bottom
+        game.make_move((6, 0))
+        game.draw_state()
+        winner = game.check_win()
+        print("Winner:", winner)
+    else:
+        game.go_to_end_game()
+        game.draw_state()
+        print(game.check_win())
+        print(game.get_player_turn())

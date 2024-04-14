@@ -59,3 +59,9 @@ class GameInterface(ABC):
         Return the current state of the game.
         """
         pass
+
+    def draw_state(self):
+        """
+        Draw the current state of the game.
+        """
+        pass

@@ -45,8 +45,7 @@ class Nim(GameInterface):
         else:
             raise Exception()
 
-    def print_pile(self):
-        # print the piles nicely
+    def draw_state(self):
         print(self.state)
 
     def is_terminal(self):

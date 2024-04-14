@@ -66,11 +66,11 @@ class DefaultPolicy:
         """
 
         # TODO: The default policy should not add nodes to the tree. It should only simulate the game.
-        curr_state = curr_node.game_state
+        curr_state = curr_node.game_state.clone()
         while not curr_state.is_terminal():
             possible_moves = curr_state.get_legal_moves()
             move = random.choice(possible_moves)
-            curr_state = curr_state.make_move(move)
+            curr_state.make_move(move)
         return curr_state
 
 

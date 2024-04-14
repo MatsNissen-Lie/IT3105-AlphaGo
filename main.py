@@ -6,10 +6,37 @@ import argparse
 
 import numpy as np
 from game import Hex
+from neural_net.actor import Actor
+from neural_net.anet import ANet
 
 
 def main(args):
-    pass
+    """
+    Main function for the example CLI
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        The parsed arguments
+    """
+    game = Hex()
+
+    if args.load_models:
+        # Load the pre-trained models
+        pass
+
+    if args.tournament:
+        # Run a tournament
+        pass
+
+    if args.train:
+        model = ANet()
+        actor = Actor(model)
+        actor.train()
+
+    if args.play:
+        # Play against the neural network model
+        pass
 
 
 def parse_args():

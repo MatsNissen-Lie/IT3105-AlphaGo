@@ -75,7 +75,7 @@ class Actor:
     def epsiolon_decay(self, game_count: int):
         return EPSILON_DECAY ** (game_count)
 
-    def play(self):
+    def train(self):
         for game_number in range(self.number_of_games):
             # for the first iteration epsoilon is 1. No neural network is used. After the first iteration, the epsilon is decayed.
             epsilon = self.epsiolon_decay(game_number)
@@ -83,14 +83,15 @@ class Actor:
             mcts = MCTS(game, self.anet, self.simulations, epsilon)
             root = mcts.get_root()
             while not game.is_terminal():
-                new_node, move_visits = mcts.run(root)
+                # mcts run sets a new root node and discards everything else in the tree
+                best_node, move_visits = mcts.run(root)
                 x, D = game.get_nn_input(), game.transform_nn_output(move_visits)
                 self.replay_buffer.add(x, D)
 
-                game.make_move(new_node.move_from_parent)
-                root = new_node
+                game.make_move(best_node.move_from_parent)
+                root = best_node
 
-                print(f"\nPlayer {game.get_player()}: {new_node.move_from_parent}")
+                print(f"\nPlayer {game.get_player()}: {best_node.move_from_parent}")
                 mcts.draw_tree()
             print(f"Game {game_number} finished. Winner: {game.check_win()}")
 

@@ -184,7 +184,7 @@ class Hex:
         clone = copy.deepcopy(self)
         return clone
 
-    def transform_nn_output(
+    def transform_moves_to_nn_target(
         self, move_visits: List[Tuple[Tuple[int, int], int]]
     ) -> np.ndarray:
         """Transform the output of the MCTS into a distribution of visit counts that can be used as targets for traning the neural network.
@@ -202,6 +202,39 @@ class Hex:
         total_visit_count = sum(visit_counts)
         distribution = np.array([count / total_visit_count for count in visit_counts])
         return distribution
+
+    def transform_nn_target_to_moves(
+        self, nn_output: np.ndarray
+    ) -> List[Tuple[Tuple[int, int], int]]:
+        """Transform the output of the neural network into a list of moves and their visit counts.
+
+        Args:
+            nn_output (np.ndarray): The output of the neural network.
+
+        Returns:
+            List[Tuple[Tuple[int, int], int]]: A list of moves and their visit counts.
+        """
+        move_visits = []
+        for i, probibility in enumerate(nn_output):
+            row = i // self.board_size
+            col = i % self.board_size
+            move = (row, col)
+            move_visits.append((move, probibility))
+        return move_visits
+
+    def get_move_from_nn_output(self, nn_output: np.ndarray) -> Tuple[int, int]:
+        """Get the move with the highest visit count from the output of the neural network.
+
+        Args:
+            nn_output (np.ndarray): The output of the neural network.
+
+        Returns:
+            Tuple[int, int]: The move with the highest visit count.
+        """
+        move_visits = self.transform_nn_target_to_moves(nn_output)
+        move_visits.sort(key=lambda x: x[1], reverse=True)
+        best_move = move_visits[0][0]
+        return best_move
 
     def go_to_end_game(self):
         for i in range(self.board_size - 1):

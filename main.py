@@ -1,25 +1,17 @@
-"""
-This is an example of how to use the neural network actors
-"""
-
 import argparse
-
-import numpy as np
-from game import Hex
 from neural_net.actor import Actor
 from neural_net.anet import ANet
 
 
 def main(args):
     """
-    Main function for the example CLI
+    Main function for the CLI
 
     Parameters
     ----------
     args : argparse.Namespace
         The parsed arguments
     """
-    game = Hex()
 
     if args.load_models:
         # Load the pre-trained models

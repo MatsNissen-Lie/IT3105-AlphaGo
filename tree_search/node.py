@@ -33,26 +33,6 @@ class Node:
         self.visits += 1
         self.value += result
 
-    # def visit_count_distribution(self) -> np.ndarray:
-    #     '''
-    #     Returns the visit count distribution of the children of the root node.
-
-    #     Returns
-    #     -------
-    #     distribution: list
-    #         The visit count distribution of the children of the root node.
-    #     '''
-    #     visit_counts = [0] * self.game_state.**2
-
-    #     for child in self.children:
-    #         prev_action = child.state.get_previous_action()
-    #         index = prev_action[0] * BOARD_SIZE + prev_action[1]
-    #         visit_counts[index] = child.visits
-    #     total_visit_count = sum(visit_counts)
-    #     distribution = np.array(
-    #         [count / total_visit_count for count in visit_counts])
-    #     return distribution
-
     def UCT(self) -> float:
         """
         Calculate the value of the child node. From the parents view.

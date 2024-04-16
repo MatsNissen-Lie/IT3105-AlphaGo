@@ -19,8 +19,8 @@ class MCTS:
         self.root = Node(game)
         self.tree_policy = TreePlolicy()
         self.iteration_limit = iteration_limit
-        self.NN = neural_net
-        self.NN_confidence = 0.3  # Starting value
+        self.anet = neural_net
+        # self.NN_confidence = 0.3  # Starting value
 
     def get_root(self):
         return self.root
@@ -32,7 +32,7 @@ class MCTS:
     def expand(self, node: Node):
         # Get the possible moves from the game state
         possible_moves = node.game_state.get_legal_moves()
-        random.shuffle(possible_moves)
+        # random.shuffle(possible_moves)
         # TODO: Vi kan bruke Anet til å velge hvilke moves vi skal legge til i treet!
         for move in possible_moves:
             old_state = node.game_state.clone()
@@ -40,7 +40,7 @@ class MCTS:
             node.add_child(old_state, move)
 
     # aka leaf_evaluation
-    def simulate(self, node):
+    def simulate(self, node, epsilon):
         # Use the critic to evaluate the node
         # her kan du gjør en rollout med Anet som actor eller en critic med Anet og spare deg for rollout.
         """
@@ -56,13 +56,13 @@ class MCTS:
         num_rollouts = 100
 
         for _ in range(num_rollouts):
-            value = self.rollout(node)
+            value = self.rollout(node, epsilon)
             total_value += value
 
         average_value = total_value / num_rollouts
         return average_value
 
-    def rollout(self, node: Node, epsilon=0.1, isRandom=True):
+    def rollout(self, node: Node, epsilon=0.1):
         """
         Perform a rollout from the given node using an epsilon-greedy strategy.
 
@@ -73,10 +73,10 @@ class MCTS:
         Returns:
         float: The estimated value of the node.
         """
-        # leaf_node: Node = copy.deepcopy(node)
-        leaf_node: Node = node
+        # leaf_node: Node = copy.deepcopy(node). Children are not copied
+        leaf_node = node
         if self.anet:
-            policy = TargetPolicy()
+            policy = TargetPolicy(self.anet)
             terminal_state = policy(leaf_node, epsilon)
         else:
             policy = DefaultPolicy()
@@ -91,7 +91,7 @@ class MCTS:
             node.update(value)
             node = node.parent
 
-    def run(self, root_node: Node):
+    def run(self, root_node: Node, epsilon: float = 0.1):
         self.root = root_node
         self.root.parent = None
 
@@ -104,7 +104,7 @@ class MCTS:
             if not node.is_terminal():
                 self.expand(node)
 
-            value = self.simulate(node)
+            value = self.simulate(node, epsilon)
             self.backpropagate(node, value)
 
         return self.best_move(), self.get_move_visits()
@@ -132,32 +132,31 @@ class MCTS:
             x.visits,
             "p" + str(x.game_state.get_player()),
         ),
+        child_policy=lambda x: x.samle_children(2),
         depth=3,
     ):
-        pt = PrettyPrintTree(
-            lambda x: x.samle_children(child_count), object_view, max_depth=depth
-        )
+        pt = PrettyPrintTree(child_policy, object_view, max_depth=depth)
         pt(self.root)
 
-    # jeg vil gjøre et approch der vi begynner med å gjøre rollouts også gir vi mer og mer tillit til modellen vår etterhvert som vi har gjort flere rollouts
-    def update_critic_confidence(self, critic_accuracy):
-        # Adjust the confidence based on the accuracy
-        increment = 0.02  # Increment value
-        decrement = 0.01  # Decrement value
-        threshold = 0.75  # Performance threshold (e.g., 75% accuracy)
-        # This is a simplistic adjustment logic; you might want a more sophisticated method
-        if critic_accuracy > threshold:  # Define a suitable threshold
-            self.NN_confidence = min(self.NN_confidence + increment, 1.0)
-        else:
-            self.NN_confidence = max(self.NN_confidence - decrement, 0.0)
+    def draw_tree_policy(
+        self,
+        child_count=1,
+        depth=10,
+    ):
+        pt = PrettyPrintTree(
+            lambda x: self.tree_policy.get_children_for_draw_tree(x, 1),
+            object_view,
+            max_depth=depth,
+        )
+        pt(self.root)
 
 
 if __name__ == "__main__":
     game = Hex()
     game.go_to_end_game()
     # game = Nim(8, 3)
-    mcts = MCTS(None, 2000, game)
-    res = mcts.run(mcts.root.game_state)
+    mcts = MCTS(game, iteration_limit=1000)
+    res = mcts.run(mcts.get_root())
     # print(res)
 
     object_view = lambda x: (
@@ -168,4 +167,6 @@ if __name__ == "__main__":
         "p" + str(x.game_state.get_player()),
     )
     game.draw_state()
+    # mcts.draw_tree(child_count=2, depth=2, object_view=object_view)
+    # mcts.draw_tree_policy()
     mcts.draw_tree(child_count=2, depth=2, object_view=object_view)

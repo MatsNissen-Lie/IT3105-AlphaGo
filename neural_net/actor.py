@@ -2,6 +2,7 @@ import random
 from config.params import (
     BOARD_SIZE,
     EPSILON_DECAY,
+    MIN_EPSILON,
     NUMBER_OF_GAMES,
     REPLAY_BUFFER_SIZE,
     SAVE_INTERVAL,
@@ -73,18 +74,18 @@ class Actor:
         self.save_interval = save_interval
 
     def epsiolon_decay(self, game_count: int):
-        return EPSILON_DECAY ** (game_count)
+        return max(EPSILON_DECAY ** (game_count), MIN_EPSILON)
 
     def train(self):
         for game_number in range(self.number_of_games):
             # for the first iteration epsoilon is 1. No neural network is used. After the first iteration, the epsilon is decayed.
             epsilon = self.epsiolon_decay(game_number)
             game = Hex(BOARD_SIZE)
-            mcts = MCTS(game, self.anet, self.simulations, epsilon)
+            mcts = MCTS(game, self.anet, self.simulations)
             root = mcts.get_root()
             while not game.is_terminal():
                 # mcts run sets a new root node and discards everything else in the tree
-                best_node, move_visits = mcts.run(root)
+                best_node, move_visits = mcts.run(root, epsilon)
                 x, D = game.get_nn_input(), game.transform_nn_output(move_visits)
                 self.replay_buffer.add(x, D)
 
@@ -100,3 +101,9 @@ class Actor:
 
             if (game_number + 1) % self.save_interval == 0:
                 self.anet.save_model()
+
+
+if __name__ == "__main__":
+    anet = ANet()
+    actor = Actor(anet, number_of_games=1)
+    actor.train()

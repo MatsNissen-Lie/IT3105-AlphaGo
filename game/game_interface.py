@@ -54,14 +54,23 @@ class GameInterface(ABC):
         """
         pass
 
+    @abstractmethod
     def get_state(self):
         """
         Return the current state of the game.
         """
         pass
 
+    @abstractmethod
     def draw_state(self):
         """
         Draw the current state of the game.
+        """
+        pass
+
+    @abstractmethod
+    def get_move_from_nn_output(self, pred):
+        """
+        Get the move from the neural network output.
         """
         pass

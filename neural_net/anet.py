@@ -23,9 +23,11 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import Adam, RMSprop, SGD, Adagrad
 import keras
-
 from game.hex import Hex
 from neural_net.enums import Activation, Optimizer
+from keras import activations
+
+activations.relu
 
 
 class ANet:
@@ -39,7 +41,7 @@ class ANet:
         output_shape: int = OUTPUT_SHAPE,
         # model = None
     ):
-        self.activateion = activation
+        self.activation = activation
         self.optimizer = optimizer
         self.layers = layers
         self.learning_rate = learning_rate
@@ -51,11 +53,11 @@ class ANet:
         model = Sequential()
 
         # Adding the input layer //TODO: maybe make this with the
-        model.add(keras.layers.InputLayer(input_shape=(self.input_shape,)))
+        model.add(keras.layers.InputLayer(shape=(self.input_shape,)))
 
         # Adding hidden layers
         for layer_size in self.layers:
-            model.add(Dense(layer_size, activation=self.activation))
+            model.add(Dense(layer_size, activation=self.activation.value))
 
         # Adding the output layer
         model.add(
@@ -94,13 +96,13 @@ class ANet:
 
     def get_optimizer(self):
         if self.optimizer == Optimizer.ADAGRAD:
-            return Adagrad(lr=self.learning_rate)
+            return Adagrad(learning_rate=self.learning_rate)
         elif self.optimizer == Optimizer.ADAM:
-            return Adam(lr=self.learning_rate)
+            return Adam(learning_rate=self.learning_rate)
         elif self.optimizer == Optimizer.RMSPROP:
-            return RMSprop(lr=self.learning_rate)
+            return RMSprop(learning_rate=self.learning_rate)
         elif self.optimizer == Optimizer.SGD:
-            return SGD(lr=self.learning_rate)
+            return SGD(learning_rate=self.learning_rate)
         else:
             raise ValueError("Invalid optimizer")
 
@@ -112,8 +114,10 @@ if __name__ == "__main__":
         flat_board = game.transform_board_values_for_nn().flatten()
         player_to_move = [1 if game.player_turn == 1 else -1]
         board_representation = np.hstack([flat_board, player_to_move])
-        if True:
-            return board_representation
-        return np.expand_dims(board_representation, axis=0)
+        # if True:
+        #     return board_representation
+        # return np.expand_dims(board_representation, axis=0)
+
+        anet = ANet()
 
     print(main())

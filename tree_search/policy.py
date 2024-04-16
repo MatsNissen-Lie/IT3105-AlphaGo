@@ -1,8 +1,9 @@
 import random
+from neural_net.anet import ANet
 from tree_search.node import Node
 from game.game_interface import GameInterface
 import numpy as np
-from typing import Tuple
+from typing import List, Tuple
 
 
 class TreePlolicy:
@@ -25,6 +26,31 @@ class TreePlolicy:
         optimizer = max if node.get_state().get_player() == 1 else min
         child_node = optimizer(node.children, key=lambda x: x.UCT())
         return child_node
+
+    def get_children_orderd_by_UCT(self, node: Node) -> List[Node]:
+        """
+        Select the child node with the highest UCT value.
+
+        Returns
+        -------
+
+            The child nodes ordered by the highest UCT value.
+        """
+        if node.children == []:
+            return []
+
+        reversed = node.get_state().get_player() == 2
+        children = sorted(node.children, key=lambda x: x.UCT(), reverse=reversed)
+        return children
+
+    def get_children_for_draw_tree(
+        self, node: Node, count: int = 1, prob_extra_child: float = 0.25
+    ) -> List[Node]:
+        children = self.get_children_orderd_by_UCT(node)
+        # 25% change of adding and extra child
+        if len(children) > 2 and random.random() < prob_extra_child:
+            return children[: count + 1]
+        return children[:count]
 
     def search(self, root_node: Node) -> Tuple[Node, int]:
         """
@@ -82,6 +108,9 @@ class TargetPolicy:
     is used, since we are using on-policy Monte Carlo Tree Search.
     """
 
+    def __init__(self, anet: ANet):
+        self.anet = anet
+
     # TODO: The target policy should NOT add nodes to the tree.
     def __call__(self, curr_node: Node, epsilon: float = 0.1) -> GameInterface:
         """
@@ -98,11 +127,13 @@ class TargetPolicy:
         move : best move to explore
         """
 
-        while not curr_node.state.is_terminal():
+        curr_state = curr_node.game_state.clone()
+        while not curr_state.is_terminal():
             if random.random() < epsilon:
-                possible_moves = curr_node.state.get_legal_moves()
+                possible_moves = curr_state.get_legal_moves()
                 move = random.choice(possible_moves)
             else:
-                move = self.NN.predict_best_move(curr_node.state)
-                # state_representation
-        return move
+                pred = self.anet.predict(curr_state.get_nn_input())
+                move = curr_state.get_move_from_nn_output(pred)
+                curr_state.make_move(move)
+        return curr_state

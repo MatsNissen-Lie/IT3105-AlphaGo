@@ -83,11 +83,12 @@ class Actor:
             game = Hex(BOARD_SIZE)
             mcts = MCTS(game, self.anet, self.simulations)
             root = mcts.get_root()
+
             while not game.is_terminal():
                 # mcts run sets a new root node and discards everything else in the tree
                 best_node, move_visits = mcts.run(root, epsilon)
-                x, D = game.get_nn_input(), game.transform_nn_output(move_visits)
-                self.replay_buffer.add(x, D)
+                X, Y = game.get_nn_input(), game.transform_nn_output(move_visits)
+                self.replay_buffer.add(X, Y)
 
                 game.make_move(best_node.move_from_parent)
                 root = best_node

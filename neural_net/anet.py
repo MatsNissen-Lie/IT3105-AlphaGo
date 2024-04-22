@@ -79,7 +79,8 @@ class ANet:
         for x, D in batch:
             feature_matrix.append(x)
             probability_distribution.append(D)
-        self.train(np.array(feature_matrix), np.array(probability_distribution))
+        # WHY DO we train on an array?
+        self.train(feature_matrix, probability_distribution)
 
     def predict(self, x: np.ndarray):
         return self.model.predict(x)
@@ -111,13 +112,21 @@ if __name__ == "__main__":
 
     def main():
         game = Hex()
-        flat_board = game.transform_board_values_for_nn().flatten()
-        player_to_move = [1 if game.player_turn == 1 else -1]
-        board_representation = np.hstack([flat_board, player_to_move])
-        # if True:
-        #     return board_representation
-        # return np.expand_dims(board_representation, axis=0)
+        target = game.get_nn_input()
+        game.go_to_end_game()
+        game.draw_state()
 
-        anet = ANet()
+        board_rep = game.get_nn_input()
 
-    print(main())
+        get_legal_moves = game.get_legal_moves()
+        for move in get_legal_moves:
+            index = game.get_index_from_move(move)
+            if move[0] == 6 and move[1] == 0:
+                target[index] = 0.80
+                print(target[game.get_index_from_move(move)])
+            else:
+                target[index] = 0.05
+        print(target)
+        # anet = ANet()
+
+    main()

@@ -140,11 +140,11 @@ class Hex:
             return "Pass"
         return f"{chr(move[1] + 65)}{move[0] + 1}"
 
-    def transform_board_values_for_nn(self):
+    def transform_state_for_nn(self):
         return np.where(self.board == 1, 1, np.where(self.board == 2, -1, 0))
 
     def get_nn_input(self):
-        flat_board = self.transform_board_for_nn().flatten()
+        flat_board = self.transform_state_for_nn().flatten()
         format_player = 1 if self.player_turn == 1 else -1
         nn_input = np.append(flat_board, format_player)
         return nn_input
@@ -235,6 +235,17 @@ class Hex:
         move_visits.sort(key=lambda x: x[1], reverse=True)
         best_move = move_visits[0][0]
         return best_move
+
+    def get_index_from_move(self, move: Tuple[int, int]) -> int:
+        """Get the index of a move on the board.
+
+        Args:
+            move (Tuple[int, int]): The move to get the index of.
+
+        Returns:
+            int: The index of the move on the board.
+        """
+        return move[0] * self.board_size + move[1]
 
     def go_to_end_game(self):
         for i in range(self.board_size - 1):

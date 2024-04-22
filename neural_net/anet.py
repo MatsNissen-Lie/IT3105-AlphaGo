@@ -112,8 +112,11 @@ if __name__ == "__main__":
 
     def main():
         game = Hex()
+        target = np.zeros(game.board_size**2)
         target = game.get_nn_input()
         game.go_to_end_game()
+        # target = np.append(target, game.get_nn_player())
+        target[-1] = game.get_nn_player()
         game.draw_state()
 
         board_rep = game.get_nn_input()
@@ -123,9 +126,10 @@ if __name__ == "__main__":
             index = game.get_index_from_move(move)
             if move[0] == 6 and move[1] == 0:
                 target[index] = 0.80
-                print(target[game.get_index_from_move(move)])
             else:
                 target[index] = 0.05
+        # append the player
+
         print(target)
         # anet = ANet()
 

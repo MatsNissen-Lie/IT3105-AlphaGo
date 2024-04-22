@@ -147,6 +147,7 @@ class Hex:
         flat_board = self.transform_state_for_nn().flatten()
         format_player = 1 if self.player_turn == 1 else -1
         nn_input = np.append(flat_board, format_player)
+        nn_input = np.array(nn_input, dtype=np.float64)
         return nn_input
 
     def get_nn_input_advanced(self):
@@ -235,6 +236,9 @@ class Hex:
         move_visits.sort(key=lambda x: x[1], reverse=True)
         best_move = move_visits[0][0]
         return best_move
+
+    def get_nn_player(self):
+        return 1 if self.player_turn == 1 else -1
 
     def get_index_from_move(self, move: Tuple[int, int]) -> int:
         """Get the index of a move on the board.

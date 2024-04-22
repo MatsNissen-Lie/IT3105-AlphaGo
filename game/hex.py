@@ -143,12 +143,14 @@ class Hex:
     def transform_state_for_nn(self):
         return np.where(self.board == 1, 1, np.where(self.board == 2, -1, 0))
 
-    def get_nn_input(self):
+    def get_nn_input(self, isForReplayBuffer=False):
         flat_board = self.transform_state_for_nn().flatten()
         format_player = 1 if self.player_turn == 1 else -1
         nn_input = np.append(flat_board, format_player)
         nn_input = np.array(nn_input, dtype=np.float64)
-        return nn_input
+        if isForReplayBuffer:
+            return nn_input
+        return np.expand_dims(nn_input, axis=0)
 
     def get_nn_input_advanced(self):
         # Create separate channels for each player

@@ -2,7 +2,7 @@
 This module contains a class to build a neural network model by using tf.Keras
 """
 
-import datetime
+from datetime import datetime
 from enum import Enum
 from math import sqrt
 import os
@@ -74,26 +74,31 @@ class ANet:
         self.model.fit(x_train, y_train, epochs=epochs)
 
     def train_batch(self, batch: List[Tuple]):
-        feature_matrix = np.array([])
-        probability_distribution = np.array([])
+        feature_matrix = []
+        probability_distribution = []
         for x, D in batch:
             feature_matrix.append(x)
             probability_distribution.append(D)
-        # WHY DO we train on an array?
+        feature_matrix = np.array(feature_matrix)
+        probability_distribution = np.array(probability_distribution)
         self.train(feature_matrix, probability_distribution)
 
     def predict(self, x: np.ndarray):
         return self.model.predict(x)
 
-    def save_model(self):
+    def save_model(self, game_name="hex"):
         num = 0
-        board_size = sqrt(self.output_shape)
-        date = datetime.now().strftime("%Y-%m-%d")
-        location = f"models/{board_size}x{board_size}/{date}/model_{num}.h5"
+        board_size = int(sqrt(self.output_shape))
+        date = date = datetime.now().strftime("%Y-%m-%d")
+        location_from_root = (
+            f"../models/{game_name}/{board_size}x{board_size}/{date}/model_{num}.h5"
+        )
+        location = os.path.join(os.path.dirname(__file__), location_from_root)
+
         while os.path.exists(location):
             num += 1
             location = f"models/model_{num}.h5"
-        self.model.save(location)
+        keras.saving.save_model(self.model, location)
 
     def get_optimizer(self):
         if self.optimizer == Optimizer.ADAGRAD:
@@ -113,13 +118,10 @@ if __name__ == "__main__":
     def main():
         game = Hex()
         target = np.zeros(game.board_size**2)
-        target = game.get_nn_input()
         game.go_to_end_game()
-        # target = np.append(target, game.get_nn_player())
-        target[-1] = game.get_nn_player()
         game.draw_state()
 
-        board_rep = game.get_nn_input()
+        board_rep = game.get_nn_input(True)
 
         get_legal_moves = game.get_legal_moves()
         for move in get_legal_moves:
@@ -128,9 +130,18 @@ if __name__ == "__main__":
                 target[index] = 0.80
             else:
                 target[index] = 0.05
-        # append the player
 
+        print(board_rep)
         print(target)
-        # anet = ANet()
+        anet = ANet()
+
+        minibatch = [(board_rep, target), (board_rep, target)]
+
+        anet.train_batch(minibatch)
+
+        anet.save_model()
+        res = anet.predict(np.expand_dims(board_rep, axis=0))
+        # round off to 2 decimal places
+        print(np.round(res, 3))
 
     main()

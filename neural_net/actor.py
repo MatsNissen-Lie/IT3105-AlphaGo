@@ -57,6 +57,7 @@ class Actor:
 
     def train(self):
         for game_number in range(self.number_of_games):
+            print(f"Game {game_number}")
             # for the first iteration epsoilon is 1. No neural network is used. After the first iteration, the epsilon is decayed.
             epsilon = self.epsiolon_decay(game_number)
             game = Hex(BOARD_SIZE)

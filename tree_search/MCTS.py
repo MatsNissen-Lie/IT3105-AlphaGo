@@ -4,6 +4,7 @@ from config.params import SIMULATIONS
 from game.game_interface import GameInterface
 from game.hex import Hex
 from game.nim import Nim
+from neural_net.anet import ANet
 from tree_search.policy import DefaultPolicy, TargetPolicy, TreePlolicy
 from tree_search.node import Node
 # from PrettyPrint import PrettyPrintTree
@@ -164,9 +165,9 @@ if __name__ == "__main__":
     game = Hex()
     game.go_to_end_game()
     # game = Nim(8, 3)
-    mcts = MCTS(game, iteration_limit=1000)
-    res = mcts.run(mcts.get_root())
-    # print(res)
+    anet = ANet()
+    mcts = MCTS(game, neural_net=anet, iteration_limit=SIMULATIONS)
+    best_node, child_nodes = mcts.run(mcts.get_root(), epsilon=1)
 
     object_view = lambda x: (
         round(x.UCT(), 2),

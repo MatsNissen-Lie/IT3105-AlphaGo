@@ -67,8 +67,8 @@ class Actor:
             root = mcts.get_root()
             while not game.is_terminal():
                 # mcts run sets a new root node and discards everything else in the tree
-                best_node, move_visits = mcts.run(root, epsilon)
-                X, Y = game.get_nn_input(), game.transform_state_for_nn()
+                best_node, child_nodes = mcts.run(root, epsilon)
+                X, Y = game.get_nn_input(), game.get_nn_target(child_nodes)
                 self.replay_buffer.add(X, Y)
                 print("yum4")
 

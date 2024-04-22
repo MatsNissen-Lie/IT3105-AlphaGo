@@ -128,9 +128,10 @@ class TargetPolicy:
         """
 
         # TODO: this doesnt work for some reason
+
         curr_state = curr_node.game_state.clone()
         while not curr_state.is_terminal():
-            if random.random() > epsilon:
+            if random.random() < epsilon:
                 possible_moves = curr_state.get_legal_moves()
                 move = random.choice(possible_moves)
                 curr_state.make_move(move)

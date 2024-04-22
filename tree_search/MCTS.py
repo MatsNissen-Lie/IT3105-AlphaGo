@@ -7,7 +7,7 @@ from game.nim import Nim
 from neural_net.anet import ANet
 from tree_search.policy import DefaultPolicy, TargetPolicy, TreePlolicy
 from tree_search.node import Node
-# from PrettyPrint import PrettyPrintTree
+from PrettyPrint import PrettyPrintTree
 
 
 class MCTS:
@@ -27,7 +27,7 @@ class MCTS:
         return self.root
 
     def select_node(self) -> "Node":
-        
+
         node, _ = self.tree_policy.search(self.root)
         return node
 
@@ -148,17 +148,17 @@ class MCTS:
         if self.root.children:
             pt(self.root)
 
-    # def draw_tree_policy(
-    #     self,
-    #     child_count=1,
-    #     depth=10,
-    # ):
-    #     pt = PrettyPrintTree(
-    #         lambda x: self.tree_policy.get_children_for_draw_tree(x, 1),
-    #         object_view,
-    #         max_depth=depth,
-    #     )
-    #     pt(self.root)
+    def draw_tree_policy(
+        self,
+        child_count=1,
+        depth=10,
+    ):
+        pt = PrettyPrintTree(
+            lambda x: self.tree_policy.get_children_for_draw_tree(x, 1),
+            object_view,
+            max_depth=depth,
+        )
+        pt(self.root)
 
 
 if __name__ == "__main__":

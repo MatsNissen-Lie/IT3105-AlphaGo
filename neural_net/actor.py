@@ -1,4 +1,6 @@
 import random
+
+import numpy as np
 from config.params import (
     BOARD_SIZE,
     EPSILON_DECAY,
@@ -31,7 +33,7 @@ class ReplayBuffer:
 
     def sample(self):
         batch_size = min(len(self.buffer), self.replay_batch_size)
-        return random.sample(self.buffer, batch_size)
+        return np.array(random.sample(self.buffer, batch_size))
 
     def __len__(self):
         return len(self.buffer)

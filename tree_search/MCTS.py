@@ -130,7 +130,8 @@ class MCTS:
         depth=3,
     ):
         pt = PrettyPrintTree(child_policy, object_view, max_depth=depth)
-        pt(self.root)
+        if self.root.children:
+            pt(self.root)
 
     def draw_tree_policy(
         self,

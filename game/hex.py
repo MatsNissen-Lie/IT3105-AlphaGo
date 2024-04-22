@@ -2,11 +2,11 @@ import copy
 from typing import List, Tuple
 import numpy as np
 
-from tree_search.node import Node
-
 
 class Hex:
     def __init__(self, board_size=7):
+        from tree_search.node import Node
+
         if not 3 <= board_size <= 10:
             raise ValueError("Board size must be between 3 and 10")
         self.board_size = board_size

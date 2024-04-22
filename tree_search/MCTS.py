@@ -107,16 +107,10 @@ class MCTS:
             value = self.simulate(node, epsilon)
             self.backpropagate(node, value)
 
-        return self.best_move(), self.get_move_visits()
+        return self.best_node(), self.root.children
 
-    def best_move(self) -> "Node":
-        # Implement logic to choose the best move from the root node
-        # get children from root node and order them by visits
-        moves = []
-        for child in self.root.children:
-            moves.append((child, child.visits))
-        moves.sort(key=lambda x: x[1], reverse=True)
-        return moves[0][0]
+    def best_node(self) -> "Node":
+        return self.root.children.sort(key=lambda x: x.visits, reverse=True)
 
     def get_move_visits(self) -> List[Tuple[Tuple[int, int], int]]:
         moves = []

@@ -37,27 +37,6 @@ class ReplayBuffer:
         return len(self.buffer)
 
 
-# Pseudocode for the entire algorithm appears below:
-# 1. is = save interval for ANET (the actor network) parameters
-# 2. Clear Replay Buffer (RBUF)
-# 3. Randomly initialize parameters (weights and biases) of ANET 4. For ga in number actual games:
-# (a) Initialize the actual game board (Ba) to an empty board.
-# (b) sinit ← starting board state
-# (c) Initialize the Monte Carlo Tree (MCT) to a single root, which represents sinit (d) While Ba not in a final state:
-# • Initialize Monte Carlo game board (Bmc) to same state as root. • For gs in number search games:
-# – Use tree policy Pt to search from root to a leaf (L) of MCT. Update Bmc with each move.
-# – Use ANET to choose rollout actions from L to a final state (F). Update Bmc with each move. – Perform MCTS backpropagation from F to root.
-# • next gs
-# • D = distribution of visit counts in MCT along all arcs emanating from root. • Add case (root, D) to RBUF
-# • Choose actual move (a*) based on D
-# • Perform a* on root to produce successor state s*
-# • Update Ba to s*
-# • In MCT, retain subtree rooted at s*; discard everything else.
-# • root ← s*
-# (e) Train ANET on a random minibatch of cases from RBUF (f) if ga modulo is == 0:
-# • Save ANET’s current parameters for later use in tournament play. 5. next ga
-
-
 class Actor:
     def __init__(
         self,
@@ -86,8 +65,8 @@ class Actor:
 
             while not game.is_terminal():
                 # mcts run sets a new root node and discards everything else in the tree
-                best_node, move_visits = mcts.run(root, epsilon)
-                X, Y = game.get_nn_input(), game.transform_nn_output(move_visits)
+                best_node, child_nodes = mcts.run(root, epsilon)
+                X, Y = game.get_nn_input(), game.get_nn_target(child_nodes)
                 self.replay_buffer.add(X, Y)
 
                 game.make_move(best_node.move_from_parent)

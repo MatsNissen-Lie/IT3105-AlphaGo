@@ -75,9 +75,9 @@ class GameInterface(ABC):
         """
         pass
 
-    # @abstractmethod
-    # def transform_nn_output(self, nn_output):
-    #     """
-    #     Transform the neural network output to the game move.
-    #     """
-    #     pass
+    @abstractmethod
+    def get_nn_target(self, nn_output):
+        """
+        Transform the neural network output to the game move.
+        """
+        pass

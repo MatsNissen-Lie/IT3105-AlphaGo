@@ -27,8 +27,6 @@ from game.hex import Hex
 from neural_net.enums import Activation, Optimizer
 from keras import activations
 
-activations.relu
-
 
 class ANet:
     def __init__(

@@ -2,6 +2,8 @@ import copy
 from typing import List, Tuple
 import numpy as np
 
+from tree_search.node import Node
+
 
 class Hex:
     def __init__(self, board_size=7):
@@ -152,52 +154,24 @@ class Hex:
             return nn_input
         return np.expand_dims(nn_input, axis=0)
 
-    def get_nn_input_advanced(self):
-        # Create separate channels for each player
-        player1_channel = (self.board == 1).astype(int)
-        player2_channel = (self.board == 2).astype(int)
-
-        # Channel for the current player
-        current_player_channel = np.full(
-            (self.board_size, self.board_size), 1 if self.player_turn == 1 else -1
-        )
-
-        # Stack the channels to create a multi-channel input
-        stacked_channels = np.stack(
-            (player1_channel, player2_channel, current_player_channel)
-        )
-
-        # Additional game state information
-        num_pieces_player1 = np.sum(player1_channel)
-        num_pieces_player2 = np.sum(player2_channel)
-        total_moves = num_pieces_player1 + num_pieces_player2
-
-        # Append additional game state information to the channels
-        game_state_info = np.array(
-            [num_pieces_player1, num_pieces_player2, total_moves]
-        )
-
-        # Combine multi-channel input with game state information
-        nn_input = (stacked_channels, game_state_info)
-
-        return nn_input
-
     # make a clone of the board
     def clone(self):
         clone = copy.deepcopy(self)
         return clone
 
-    def transform_moves_to_nn_target(
-        self, move_visits: List[Tuple[Tuple[int, int], int]]
-    ) -> np.ndarray:
-        """Transform the output of the MCTS into a distribution of visit counts that can be used as targets for traning the neural network.
+    def get_nn_target(self, nodes: List["Node"]) -> np.ndarray:
+        """Get the target distribution of visit counts for the neural network.
 
         Args:
-            move_visits (List[Tuple[Tuple[int, int], int]]): A list of moves and their visit counts.
+            nodes (List['Node']): The nodes from the MCTS.
 
         Returns:
-            ndarray[float]: A distribution of visit counts for each move on the board.
+            np.ndarray: The target distribution of visit counts.
         """
+        move_visits = []
+        for node in nodes:
+            move_visits.append((node.move_from_parent, node.visits))
+
         visit_counts = [0] * self.board_size**2
         for move, visits in move_visits:
             index = move[0] * self.board + move[1]

@@ -27,7 +27,7 @@ This file contains the configuration for the reinforcement learning algorithm.
 REPLAY_BUFFER_SIZE = 2048
 REPLAY_BATCH_SIZE = 256
 NUMBER_OF_GAMES = 250
-SIMULATIONS = 2500
+SIMULATIONS = 500
 # IDENTIFIER = "model"
 EPSILON_DECAY = 0.95
 MIN_EPSILON = 0.1

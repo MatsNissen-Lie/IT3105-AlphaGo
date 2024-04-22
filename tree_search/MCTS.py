@@ -6,7 +6,7 @@ from game.hex import Hex
 from game.nim import Nim
 from tree_search.policy import DefaultPolicy, TargetPolicy, TreePlolicy
 from tree_search.node import Node
-from PrettyPrint import PrettyPrintTree
+# from PrettyPrint import PrettyPrintTree
 
 
 class MCTS:
@@ -26,6 +26,7 @@ class MCTS:
         return self.root
 
     def select_node(self) -> "Node":
+        
         node, _ = self.tree_policy.search(self.root)
         return node
 
@@ -53,7 +54,7 @@ class MCTS:
         float: The average value of the 500 rollouts.
         """
         total_value = 0
-        num_rollouts = 100
+        num_rollouts = 1
 
         for _ in range(num_rollouts):
             value = self.rollout(node, epsilon)
@@ -118,6 +119,19 @@ class MCTS:
             moves.append((child.move_from_parent, child.visits))
         return moves
 
+    # def draw_tree(
+    #     self,
+    #     child_count=2,
+    #     object_view=lambda x: (
+    #         x.UTC(),
+    #         x.visits,
+    #         "p" + str(x.game_state.get_player()),
+    #     ),
+    #     child_policy=lambda x: x.samle_children(2),
+    #     depth=3,
+    # ):
+    #     pt = PrettyPrintTree(child_policy, object_view, max_depth=depth)
+    #     pt(self.root)
     def draw_tree(
         self,
         child_count=2,
@@ -133,17 +147,17 @@ class MCTS:
         if self.root.children:
             pt(self.root)
 
-    def draw_tree_policy(
-        self,
-        child_count=1,
-        depth=10,
-    ):
-        pt = PrettyPrintTree(
-            lambda x: self.tree_policy.get_children_for_draw_tree(x, 1),
-            object_view,
-            max_depth=depth,
-        )
-        pt(self.root)
+    # def draw_tree_policy(
+    #     self,
+    #     child_count=1,
+    #     depth=10,
+    # ):
+    #     pt = PrettyPrintTree(
+    #         lambda x: self.tree_policy.get_children_for_draw_tree(x, 1),
+    #         object_view,
+    #         max_depth=depth,
+    #     )
+    #     pt(self.root)
 
 
 if __name__ == "__main__":

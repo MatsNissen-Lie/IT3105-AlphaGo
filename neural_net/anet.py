@@ -80,7 +80,7 @@ class ANet:
             probability_distribution.append(D)
         feature_matrix = np.array(feature_matrix)
         probability_distribution = np.array(probability_distribution)
-        self.train(feature_matrix, probability_distribution, verbose=0)
+        self.train(feature_matrix, probability_distribution)
 
     def predict(self, x: np.ndarray):
         return self.model.predict(x, verbose=0)

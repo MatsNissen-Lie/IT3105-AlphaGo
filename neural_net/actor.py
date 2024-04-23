@@ -76,11 +76,12 @@ class Actor:
                 X, Y = game.get_nn_input(True), game.get_nn_target(child_nodes)
                 self.replay_buffer.add(X, Y)
                 # print move from parent
-                print(f"\nPlayer {game.get_player()}: {best_node.move_from_parent}")
+                # print(f"\nPlayer {game.get_player()}: {best_node.move_from_parent}")
                 game.make_move(best_node.move_from_parent)
                 root = best_node
-                game.draw_state()
+                # game.draw_state()
                 # mcts.draw_tree()
+            game.draw_state()
             print(f"Game {game_number} finished. Winner: {game.check_win()}")
 
             minibatch = self.replay_buffer.sample()

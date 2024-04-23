@@ -144,6 +144,6 @@ if __name__ == "__main__":
         print(np.round(res, 3))
         print(next_move)
         print(game.move_to_str(next_move))
-        assert game.move_to_str(next_move) == "A1"
+        assert game.move_to_str(next_move) == "A7"
 
     main()

@@ -68,7 +68,7 @@ class Actor:
             while not game.is_terminal():
                 # mcts run sets a new root node and discards everything else in the tree
                 best_node, child_nodes = mcts.run(root, epsilon)
-                X, Y = game.get_nn_input(), game.get_nn_target(child_nodes)
+                X, Y = game.get_nn_input(True), game.get_nn_target(child_nodes)
                 self.replay_buffer.add(X, Y)
                 # print move from parent
                 print(f"\nPlayer {game.get_player()}: {best_node.move_from_parent}")
@@ -86,7 +86,41 @@ class Actor:
 
 
 if __name__ == "__main__":
+    test_replaybuffer = True
     anet = ANet()
-    actor = Actor(anet, number_of_games=1)
-    # actor = Actor(anet)
-    actor.train()
+    if not test_replaybuffer:
+        actor = Actor(anet, number_of_games=1)
+        # actor = Actor(anet)
+        actor.train()
+
+    else:
+        game = Hex()
+        target = np.zeros(game.board_size**2)
+        game.go_to_end_game()
+        game.draw_state()
+
+        board_rep = game.get_nn_input(True)
+
+        get_legal_moves = game.get_legal_moves()
+        for move in get_legal_moves:
+            index = game.get_index_from_move(move)
+            if move[0] == 6 and move[1] == 0:
+                target[index] = 0.80
+            else:
+                target[index] = 0.05
+
+        buffer = ReplayBuffer()
+        buffer.add(board_rep, target)
+        buffer.add(board_rep, target)
+        buffer.sample()
+        anet.train_batch(buffer.sample())
+
+        res = anet.predict(np.expand_dims(board_rep, axis=0))
+        next_move = game.get_move_from_nn_output(res)
+        # round off to 2 decimal places
+        print(np.round(res, 3))
+        print(next_move)
+        print(game.move_to_str(next_move))
+        assert game.move_to_str(next_move) == "A7"
+
+    # test replay buffer

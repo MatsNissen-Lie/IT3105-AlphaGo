@@ -1,4 +1,5 @@
 import random
+import time
 
 import numpy as np
 from config.params import (
@@ -71,6 +72,10 @@ class Actor:
             mcts = MCTS(game, self.anet, self.simulations)
             root = mcts.get_root()
             print(f"Game {game_number+1} started. Epsilon: {epsilon}")
+
+            # take the time of each game
+
+            start_time = time.time()
             while not game.is_terminal():
                 # mcts run sets a new root node and discards everything else in the tree
                 best_node, child_nodes = mcts.run(root, epsilon)
@@ -84,6 +89,8 @@ class Actor:
                 # mcts.draw_tree()
             game.draw_state()
             print(f"Game {game_number+1} finished. Winner: {game.check_win()}")
+            time_taken = time.time() - start_time
+            print(f"Time taken: {time_taken//60:.0f}m {time_taken%60:.0f}s")
 
             minibatch = self.replay_buffer.sample()
             self.anet.train_batch(minibatch)

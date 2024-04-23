@@ -1,6 +1,7 @@
 import copy
 from typing import List, Tuple
 import numpy as np
+from colorama import Back, Style, Fore
 
 # from tree_search.node import Node
 
@@ -122,7 +123,12 @@ class Hex:
         tops = " " * 5 + (" " * 3).join("-" * cols)
         roof = " " * 4 + "/ \\" + "_/ \\" * (cols - 1)
         print(headings), print(tops), print(roof)
-        color_mapping = lambda i: " WB"[int(i)]
+        # color_mapping = lambda i: " WB"[int(i)]
+        color_mapping = lambda i: (
+            f"{Back.BLUE}{Fore.WHITE} {Style.RESET_ALL}"
+            if int(i) == 1
+            else (f"{Back.RED}{Fore.WHITE} {Style.RESET_ALL}" if int(i) == 2 else f" ")
+        )
         for r in range(rows):
             row_mid = " " * indent
             row_mid += " {} | ".format(r + 1)
@@ -264,4 +270,6 @@ if __name__ == "__main__":
         print(game.check_win())
         print(game.get_player_turn())
         print(game.get_nn_input())
+        # Fore color
+        print(f"{Fore.RED}Hello World {Fore.RESET}Hello World")
         # print(game.get_nn_input_advanced())

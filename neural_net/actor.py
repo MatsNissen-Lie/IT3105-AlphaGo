@@ -12,7 +12,7 @@ from config.params import (
     REPLAY_BATCH_SIZE,
 )
 from game.hex import Hex
-from neural_net.anet import ANet
+from neural_net.anet import ANet, load_model
 from tree_search import MCTS
 
 
@@ -47,15 +47,20 @@ class Actor:
         simulations: int = SIMULATIONS,
         number_of_games: int = NUMBER_OF_GAMES,
         save_interval: int = SAVE_INTERVAL,
+        deleayEpsilon: bool = False,
     ) -> None:
         self.anet = anet
         self.replay_buffer = replay_buffer
         self.simulations = simulations
         self.number_of_games = number_of_games
         self.save_interval = save_interval
+        self.deleayEpsilon = deleayEpsilon
 
     def epsiolon_decay(self, game_count: int):
-        return max(EPSILON_DECAY ** (game_count), MIN_EPSILON)
+        return max(
+            EPSILON_DECAY ** (game_count if not self.deleayEpsilon else game_count + 1),
+            MIN_EPSILON,
+        )
 
     def train(self):
         for game_number in range(self.number_of_games):
@@ -86,14 +91,16 @@ class Actor:
 
 
 if __name__ == "__main__":
-    test_replaybuffer = True
-    anet = ANet()
+    test_replaybuffer = False
     if not test_replaybuffer:
-        actor = Actor(anet, number_of_games=1)
-        # actor = Actor(anet)
+        anet = load_model("2024-04-23", 0, "hex", 7)
+        actor = Actor(
+            anet, number_of_games=1, save_interval=1, deleayEpsilon=True, simulations=10
+        )
         actor.train()
 
     else:
+        anet = ANet()
         game = Hex()
         target = np.zeros(game.board_size**2)
         game.go_to_end_game()
@@ -122,5 +129,3 @@ if __name__ == "__main__":
         print(next_move)
         print(game.move_to_str(next_move))
         assert game.move_to_str(next_move) == "A7"
-
-    # test replay buffer

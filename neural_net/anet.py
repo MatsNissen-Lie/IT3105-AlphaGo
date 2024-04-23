@@ -95,7 +95,7 @@ class ANet:
 
         while os.path.exists(location):
             num += 1
-            location = f"models/model_{num}.h5"
+            location = location.replace(f"model_{num-1}", f"model_{num}")
         keras.saving.save_model(self.model, location)
 
     def get_optimizer(self):
@@ -109,6 +109,12 @@ class ANet:
             return SGD(learning_rate=self.learning_rate)
         else:
             raise ValueError("Invalid optimizer")
+
+
+def load_model(date, num, game_name="hex", board_size=7):
+    path = f"../models/{game_name}/{board_size}x{board_size}/{date}/model_{num}.h5"
+    path = os.path.join(os.path.dirname(__file__), path)
+    return keras.models.load_model(path)
 
 
 if __name__ == "__main__":
@@ -145,5 +151,11 @@ if __name__ == "__main__":
         print(next_move)
         print(game.move_to_str(next_move))
         assert game.move_to_str(next_move) == "A7"
+
+        loadedAnet = load_model("2024-04-23", 0, "hex", 7)
+        res = loadedAnet.predict(np.expand_dims(board_rep, axis=0))
+        next_move = game.get_move_from_nn_output(res)
+        assert game.move_to_str(next_move) == "A7"
+        print("All tests passed")
 
     main()

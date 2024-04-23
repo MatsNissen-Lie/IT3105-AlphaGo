@@ -112,7 +112,7 @@ class MCTS:
         return self.best_node(), self.root.children
 
     def best_node(self) -> "Node":
-        return self.root.children.sort(key=lambda x: x.visits, reverse=True)
+        return max(self.root.children, key=lambda x: x.visits)
 
     def get_move_visits(self) -> List[Tuple[Tuple[int, int], int]]:
         moves = []
@@ -120,24 +120,11 @@ class MCTS:
             moves.append((child.move_from_parent, child.visits))
         return moves
 
-    # def draw_tree(
-    #     self,
-    #     child_count=2,
-    #     object_view=lambda x: (
-    #         x.UTC(),
-    #         x.visits,
-    #         "p" + str(x.game_state.get_player()),
-    #     ),
-    #     child_policy=lambda x: x.samle_children(2),
-    #     depth=3,
-    # ):
-    #     pt = PrettyPrintTree(child_policy, object_view, max_depth=depth)
-    #     pt(self.root)
     def draw_tree(
         self,
         child_count=2,
         object_view=lambda x: (
-            x.UTC(),
+            x.UCT(),
             x.visits,
             "p" + str(x.game_state.get_player()),
         ),

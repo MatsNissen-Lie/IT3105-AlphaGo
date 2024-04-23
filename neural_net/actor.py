@@ -33,7 +33,7 @@ class ReplayBuffer:
 
     def sample(self):
         batch_size = min(len(self.buffer), self.replay_batch_size)
-        return np.array(random.sample(self.buffer, batch_size))
+        return random.sample(self.buffer, batch_size)
 
     def __len__(self):
         return len(self.buffer)
@@ -59,10 +59,10 @@ class Actor:
 
     def train(self):
         for game_number in range(self.number_of_games):
-            print(f"Game {game_number}")
             # for the first iteration epsoilon is 1. No neural network is used. After the first iteration, the epsilon is decayed.
             epsilon = self.epsiolon_decay(game_number)
-            game = Hex(BOARD_SIZE)
+            starting_player = 1 if game_number % 2 == 0 else 2
+            game = Hex(BOARD_SIZE, starting_player)
             mcts = MCTS(game, self.anet, self.simulations)
             root = mcts.get_root()
             while not game.is_terminal():
@@ -70,13 +70,12 @@ class Actor:
                 best_node, child_nodes = mcts.run(root, epsilon)
                 X, Y = game.get_nn_input(), game.get_nn_target(child_nodes)
                 self.replay_buffer.add(X, Y)
-                print("yum4")
-
+                # print move from parent
+                print(f"\nPlayer {game.get_player()}: {best_node.move_from_parent}")
                 game.make_move(best_node.move_from_parent)
                 root = best_node
-
-                print(f"\nPlayer {game.get_player()}: {best_node.move_from_parent}")
-                mcts.draw_tree()
+                game.draw_state()
+                # mcts.draw_tree()
             print(f"Game {game_number} finished. Winner: {game.check_win()}")
 
             minibatch = self.replay_buffer.sample()
@@ -89,4 +88,5 @@ class Actor:
 if __name__ == "__main__":
     anet = ANet()
     actor = Actor(anet, number_of_games=1)
+    # actor = Actor(anet)
     actor.train()

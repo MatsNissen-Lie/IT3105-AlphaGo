@@ -139,7 +139,11 @@ if __name__ == "__main__":
 
         anet.save_model()
         res = anet.predict(np.expand_dims(board_rep, axis=0))
+        next_move = game.get_move_from_nn_output(res)
         # round off to 2 decimal places
         print(np.round(res, 3))
+        print(next_move)
+        print(game.move_to_str(next_move))
+        assert game.move_to_str(next_move) == "A1"
 
     main()

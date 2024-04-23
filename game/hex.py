@@ -6,13 +6,13 @@ import numpy as np
 
 
 class Hex:
-    def __init__(self, board_size=7):
+    def __init__(self, board_size=7, starting_player=1):
 
         if not 3 <= board_size <= 10:
             raise ValueError("Board size must be between 3 and 10")
         self.board_size = board_size
         self.board = np.zeros((board_size, board_size))
-        self.player_turn = 1
+        self.player_turn = starting_player
         self.action = None
 
     def get_player(self):
@@ -175,7 +175,7 @@ class Hex:
 
         visit_counts = [0] * self.board_size**2
         for move, visits in move_visits:
-            index = move[0] * self.board + move[1]
+            index = move[0] * self.board_size + move[1]
             visit_counts[index] = visits
         total_visit_count = sum(visit_counts)
         distribution = np.array([count / total_visit_count for count in visit_counts])
@@ -200,6 +200,7 @@ class Hex:
             move_visits.append((move, probibility))
         return move_visits
 
+    # nn_output is a 2d array of size 1x49
     def get_move_from_nn_output(self, nn_output: np.ndarray) -> Tuple[int, int]:
         """Get the move with the highest visit count from the output of the neural network.
 
@@ -209,7 +210,7 @@ class Hex:
         Returns:
             Tuple[int, int]: The move with the highest visit count.
         """
-        move_visits = self.transform_nn_target_to_moves(nn_output)
+        move_visits = self.transform_nn_target_to_moves(nn_output[0])
         move_visits.sort(key=lambda x: x[1], reverse=True)
         best_move = move_visits[0][0]
         return best_move

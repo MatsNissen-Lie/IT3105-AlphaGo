@@ -92,7 +92,12 @@ class Actor:
 
 if __name__ == "__main__":
     test_replaybuffer = False
-    if not test_replaybuffer:
+    train = True
+    if train:
+        anet = ANet()
+        actor = Actor(anet=anet)
+        actor.train()
+    elif not test_replaybuffer:
         anet = load_model("2024-04-23", 0, "hex", 7)
         actor = Actor(
             anet, number_of_games=1, save_interval=1, deleayEpsilon=True, simulations=10

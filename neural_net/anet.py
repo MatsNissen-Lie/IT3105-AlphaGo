@@ -26,6 +26,7 @@ import keras
 from game.hex import Hex
 from neural_net.enums import Activation, Optimizer
 from keras import activations
+import shutil
 
 
 class ANet:
@@ -82,7 +83,7 @@ class ANet:
         self.train(feature_matrix, probability_distribution)
 
     def predict(self, x: np.ndarray):
-        return self.model.predict(x)
+        return self.model.predict(x, verbose=0)
 
     def save_model(self, game_name="hex"):
         num = 0
@@ -97,6 +98,17 @@ class ANet:
             num += 1
             location = location.replace(f"model_{num-1}", f"model_{num}")
         keras.saving.save_model(self.model, location)
+
+        # Copy params file only if it doesn't exist in the target directory
+        params_file_location = os.path.join(
+            os.path.dirname(__file__), "../config/params.py"
+        )
+        params_copy_location = os.path.join(
+            os.path.dirname(__file__),
+            f"../models/{game_name}/{board_size}x{board_size}/{date}/params.py",
+        )
+        if not os.path.exists(params_copy_location):
+            shutil.copy2(params_file_location, params_copy_location)
 
     def get_optimizer(self):
         if self.optimizer == Optimizer.ADAGRAD:

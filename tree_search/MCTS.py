@@ -99,7 +99,7 @@ class MCTS:
     def run(self, root_node: Node, epsilon: float = 0.1):
         self.root = root_node
         self.root.parent = None
-        sim_start, number_of_simulations = time.time()
+        sim_start, number_of_simulations = time.time(), 0
         for _ in range(self.iteration_limit):
             # make the loop promt the terminal too continue
             # if _ > 3:
@@ -112,8 +112,8 @@ class MCTS:
             value = self.simulate(node, epsilon)
             self.backpropagate(node, value)
             number_of_simulations += 1
-            if time.time() - sim_start > self.time_limit:
-                break
+            # if time.time() - sim_start > self.time_limit:
+            #     break
         sim_time = time.time() - sim_start
         # print seconds for x simulations
         print(f"Simulations {number_of_simulations} took: {sim_time:.2f} seconds")

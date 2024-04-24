@@ -48,11 +48,10 @@ class ANet:
         self.learning_rate = learning_rate
         self.input_shape = input_shape
         self.output_shape = output_shape
-        self.model = self.build_model()
+        self.model: keras.models.Model = self.build_model()
 
-    def build_model(self):
-        model = Sequential()
-
+    def build_model(self) -> keras.models.Model:
+        model: keras.models.Model = Sequential()
         # Adding the input layer //TODO: maybe make this with the
         model.add(keras.layers.InputLayer(shape=(self.input_shape,)))
 
@@ -85,7 +84,8 @@ class ANet:
         self.train(feature_matrix, probability_distribution)
 
     def predict(self, x: np.ndarray):
-        return self.model.predict(x, verbose=0)
+        # return self.model.predict(x, verbose=0, batch_size=1000)
+        return self.model.predict(x, verbose=0, batch_size=1)
 
     def save_model(self, tournament, game_name="hex"):
         board_size = int(sqrt(self.output_shape))

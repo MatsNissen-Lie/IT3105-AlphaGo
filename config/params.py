@@ -15,21 +15,25 @@ Configuration of neural network model
 """
 INPUT_SHAPE = BOARD_SIZE * BOARD_SIZE + 1
 OUTPUT_SHAPE = BOARD_SIZE * BOARD_SIZE
-LAYERS = [99, 99]
+LAYERS = [64, 64]
 ACTIVATION = Activation.RELU
 OPTIMIZER = Optimizer.ADAM
 LEARNING_RATE = 1e-3
 EPOCHS = 100
+"""
+configuration of the MCTS
+"""
+TIME_LIMIT = 2
 
 """
 This file contains the configuration for the reinforcement learning algorithm.
 """
 REPLAY_BUFFER_SIZE = 2048
 REPLAY_BATCH_SIZE = 256
-NUMBER_OF_GAMES = 100
+NUMBER_OF_GAMES = 40
 # SIMULATIONS = 100
 SIMULATIONS = 1000
 # IDENTIFIER = "model"
-EPSILON_DECAY = 0.95
+EPSILON_DECAY = 0.99
 MIN_EPSILON = 0.1
-SAVE_INTERVAL = 10
+SAVE_INTERVAL = NUMBER_OF_GAMES // 4

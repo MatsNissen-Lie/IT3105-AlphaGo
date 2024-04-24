@@ -110,7 +110,7 @@ class Actor:
 
 
 if __name__ == "__main__":
-
+    train = True
     test_replaybuffer = False
     test_simulation_time = True
 

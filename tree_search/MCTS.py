@@ -86,7 +86,6 @@ class MCTS:
         else:
             policy = DefaultPolicy()
             terminal_state = policy(leaf_node)
-
         winner = terminal_state.check_win()
         # we minimize for player 2 and maximize for player 1
         return winner if winner != 2 else -1

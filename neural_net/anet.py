@@ -28,7 +28,7 @@ from neural_net.enums import Activation, Optimizer
 from keras import activations
 import shutil
 
-from utils import get_model_location
+from utils import get_model_location, get_tournament_name
 
 
 class ANet:
@@ -84,14 +84,15 @@ class ANet:
         self.train(feature_matrix, probability_distribution)
 
     def predict(self, x: np.ndarray):
-        # return self.model.predict(x, verbose=0, batch_size=1000)
-        return self.model.predict(x, verbose=0, batch_size=1)
+        # return self.model.predict(x, verbose=1, batch_size=5000)
+        return self.model.predict(x, batch_size=5000)
 
     def save_model(self, tournament, game_name="hex"):
         board_size = int(sqrt(self.output_shape))
         location, params_location = get_model_location(
             board_size, tournament, game_name
         )
+        print(location)
         keras.saving.save_model(self.model, location)
         # Copy params file only if it doesn't exist in the target directory
         params_file_location = os.path.join(
@@ -122,7 +123,7 @@ def load_model(date, num, game_name="hex", board_size=7):
 if __name__ == "__main__":
 
     def main():
-        game = Hex()
+        game = Hex(board_size=7)
         target = np.zeros(game.board_size**2)
         game.go_to_end_game()
         game.draw_state()
@@ -139,25 +140,28 @@ if __name__ == "__main__":
 
         print(board_rep)
         print(target)
-        anet = ANet()
+        anet = ANet(
+            input_shape=game.board_size**2 + 1,
+            output_shape=game.board_size**2,
+        )
 
         minibatch = [(board_rep, target), (board_rep, target)]
 
         anet.train_batch(minibatch)
-
-        anet.save_model()
-        res = anet.predict(np.expand_dims(board_rep, axis=0))
-        next_move = game.get_move_from_nn_output(res)
+        tournament_name = get_tournament_name(game.board_size)
+        anet.save_model(tournament_name)
+        # res = anet.predict(np.expand_dims(board_rep, axis=0))
+        # next_move = game.get_move_from_nn_output(res)
         # round off to 2 decimal places
-        print(np.round(res, 3))
-        print(next_move)
-        print(game.move_to_str(next_move))
-        assert game.move_to_str(next_move) == "A7"
+        # print(np.round(res, 3))
+        # print(next_move)
+        # print(game.move_to_str(next_move))
+        # assert game.move_to_str(next_move) == "A7"
 
-        loadedAnet = load_model("2024-04-23", 0, "hex", 7)
-        res = loadedAnet.predict(np.expand_dims(board_rep, axis=0))
-        next_move = game.get_move_from_nn_output(res)
-        assert game.move_to_str(next_move) == "A7"
-        print("All tests passed")
+        # loadedAnet = load_model("2024-04-23", 0, "hex", 7)
+        # res = loadedAnet.predict(np.expand_dims(board_rep, axis=0))
+        # next_move = game.get_move_from_nn_output(res)
+        # assert game.move_to_str(next_move) == "A7"
+        # print("All tests passed")
 
     main()

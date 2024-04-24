@@ -217,6 +217,12 @@ class Hex:
             Tuple[int, int]: The move with the highest visit count.
         """
         move_visits = self.transform_nn_target_to_moves(nn_output[0])
+        # filter out illegal moves
+        move_visits = [
+            (move, visits)
+            for move, visits in move_visits
+            if self.is_valid_move(move[0], move[1])
+        ]
         move_visits.sort(key=lambda x: x[1], reverse=True)
         best_move = move_visits[0][0]
         return best_move
@@ -239,8 +245,9 @@ class Hex:
         for i in range(self.board_size - 1):
             for j in range(self.board_size):
                 self.make_move((i, j))
-        self.make_move((6, 6))
-        self.make_move((6, 1))
+        if self.board_size == 7:
+            self.make_move((6, 6))
+            self.make_move((6, 1))
 
 
 # Uncomment to test the game setup

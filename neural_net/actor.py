@@ -46,31 +46,38 @@ class Actor:
         self,
         anet: ANet,
         replay_buffer: ReplayBuffer = ReplayBuffer(REPLAY_BUFFER_SIZE),
+        board_size: int = BOARD_SIZE,
         simulations: int = SIMULATIONS,
         number_of_games: int = NUMBER_OF_GAMES,
         save_interval: int = SAVE_INTERVAL,
-        deleayEpsilon: bool = False,
+        epsilon_decay: float = EPSILON_DECAY,
+        min_epsilon: float = MIN_EPSILON,
+        startEpsilon: bool = False,
     ) -> None:
         self.anet = anet
         self.replay_buffer = replay_buffer
         self.simulations = simulations
         self.number_of_games = number_of_games
         self.save_interval = save_interval
-        self.deleayEpsilon = deleayEpsilon
+        self.startEpsilon = startEpsilon
+        self.epsilon_decay = epsilon_decay
+        self.min_epsilon = min_epsilon
+        self.board_size = board_size
 
     def epsiolon_decay(self, game_count: int):
         return max(
-            EPSILON_DECAY ** (game_count if not self.deleayEpsilon else game_count + 1),
-            MIN_EPSILON,
+            self.epsilon_decay
+            ** (game_count if not self.startEpsilon else game_count + 1),
+            self.min_epsilon,
         )
 
     def train(self):
-        tournament_name = get_tournament_name(BOARD_SIZE)
+        tournament_name = get_tournament_name(self.board_size)
         for game_number in range(self.number_of_games):
             # for the first iteration epsoilon is 1. No neural network is used. After the first iteration, the epsilon is decayed.
             epsilon = self.epsiolon_decay(game_number)
             starting_player = 1 if game_number % 2 == 0 else 2
-            game = Hex(BOARD_SIZE, starting_player)
+            game = Hex(self.board_size, starting_player)
             mcts = MCTS(game, self.anet, self.simulations)
             root = mcts.get_root()
             print(f"Game {game_number+1} started. Epsilon: {epsilon}")
@@ -103,11 +110,26 @@ class Actor:
 
 
 if __name__ == "__main__":
+
     test_replaybuffer = False
-    train = True
+    test_simulation_time = True
+
     if train:
         anet = ANet()
         actor = Actor(anet=anet)
+        actor.train()
+    elif test_simulation_time:
+        anet = ANet()
+        actor = Actor(
+            anet=anet,
+            simulations=2,
+            board_size=4,
+            number_of_games=1,
+            save_interval=1,
+            epsilon_decay=0,
+            min_epsilon=0,
+            startEpsilon=True,
+        )
         actor.train()
     elif not test_replaybuffer:
         anet = load_model("2024-04-23", 0, "hex", 7)

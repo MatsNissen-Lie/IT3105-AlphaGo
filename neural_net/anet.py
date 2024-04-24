@@ -28,6 +28,8 @@ from neural_net.enums import Activation, Optimizer
 from keras import activations
 import shutil
 
+from utils import get_model_location
+
 
 class ANet:
     def __init__(
@@ -85,30 +87,18 @@ class ANet:
     def predict(self, x: np.ndarray):
         return self.model.predict(x, verbose=0)
 
-    def save_model(self, game_name="hex"):
-        num = 0
+    def save_model(self, tournament, game_name="hex"):
         board_size = int(sqrt(self.output_shape))
-        date = date = datetime.now().strftime("%Y-%m-%d")
-        location_from_root = (
-            f"../models/{game_name}/{board_size}x{board_size}/{date}/model_{num}.h5"
+        location, params_location = get_model_location(
+            board_size, tournament, game_name
         )
-        location = os.path.join(os.path.dirname(__file__), location_from_root)
-
-        while os.path.exists(location):
-            num += 1
-            location = location.replace(f"model_{num-1}", f"model_{num}")
         keras.saving.save_model(self.model, location)
-
         # Copy params file only if it doesn't exist in the target directory
         params_file_location = os.path.join(
             os.path.dirname(__file__), "../config/params.py"
         )
-        params_copy_location = os.path.join(
-            os.path.dirname(__file__),
-            f"../models/{game_name}/{board_size}x{board_size}/{date}/params.py",
-        )
-        if not os.path.exists(params_copy_location):
-            shutil.copy2(params_file_location, params_copy_location)
+        if not os.path.exists(params_location):
+            shutil.copy2(params_file_location, params_location)
 
     def get_optimizer(self):
         if self.optimizer == Optimizer.ADAGRAD:

@@ -15,6 +15,7 @@ from config.params import (
 from game.hex import Hex
 from neural_net.anet import ANet, load_model
 from tree_search import MCTS
+from utils import get_tournament_name
 
 
 class ReplayBuffer:
@@ -64,6 +65,7 @@ class Actor:
         )
 
     def train(self):
+        tournament_name = get_tournament_name(BOARD_SIZE)
         for game_number in range(self.number_of_games):
             # for the first iteration epsoilon is 1. No neural network is used. After the first iteration, the epsilon is decayed.
             epsilon = self.epsiolon_decay(game_number)
@@ -72,6 +74,7 @@ class Actor:
             mcts = MCTS(game, self.anet, self.simulations)
             root = mcts.get_root()
             print(f"Game {game_number+1} started. Epsilon: {epsilon}")
+            print(f"Starting player: {starting_player}")
 
             # take the time of each game
 
@@ -96,7 +99,7 @@ class Actor:
             self.anet.train_batch(minibatch)
 
             if (game_number + 1) % self.save_interval == 0:
-                self.anet.save_model()
+                self.anet.save_model(tournament=tournament_name)
 
 
 if __name__ == "__main__":

@@ -89,10 +89,10 @@ class ANet:
         # print("prediction")
         # return self.model.predict(x)
 
-    def save_model(self, tournament, game_name="hex"):
+    def save_model(self, train_session, game_name="hex"):
         board_size = int(sqrt(self.output_shape))
         location, params_location = get_model_location(
-            board_size, tournament, game_name
+            board_size, train_session, game_name
         )
         print(location)
         keras.saving.save_model(self.model, location)

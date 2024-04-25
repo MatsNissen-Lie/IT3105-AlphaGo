@@ -147,6 +147,53 @@ class Hex:
         headings = " " * (indent - 2) + headings
         print(headings)
 
+    def draw_state_with_preds(self, preds):
+        # print player to move
+        # I want to add the predictions to the board
+
+        def color_mapping(cell_value, index):
+            if int(cell_value) == 1:
+                cell_display = f"{Back.BLUE} {Style.RESET_ALL}"
+            elif int(cell_value) == 2:
+                cell_display = f"{Back.RED} {Style.RESET_ALL}"
+            else:
+                # round off to a whole number int
+                prediction = int(preds[index] * 10)
+
+                cell_display = f"{prediction}"
+            return cell_display
+
+        print(
+            f"Player to move: {self.player_turn} {color_mapping(self.player_turn, 0)}"
+        )
+
+        board = self.board
+        column_names = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        rows, cols, indent = len(board), len(board[0]), 0
+        headings = " " * 5 + (" " * 3).join(column_names[:cols])
+        tops = " " * 5 + (" " * 3).join("-" * cols)
+        roof = " " * 4 + "/ \\" + "_/ \\" * (cols - 1)
+        print(headings), print(tops), print(roof)
+
+        for r in range(rows):
+            row_mid = " " * indent
+            row_mid += " {} | ".format(r + 1)
+            row_mid += " | ".join(
+                color_mapping(board[r][c], r * cols + c) for c in range(cols)
+            )
+            row_mid += " | {} ".format(r + 1)
+            if r < len(preds):
+                row_mid += f" | {preds[r]:.2f}"
+            print(row_mid)
+            row_bottom = " " * indent
+            row_bottom += " " * 3 + " \\_/" * cols
+            if r < rows - 1:
+                row_bottom += " \\"
+            print(row_bottom)
+            indent += 2
+        headings = " " * (indent - 2) + headings
+        print(headings)
+
     def move_to_str(self, move):
         if move == None:
             return "Pass"
@@ -276,11 +323,15 @@ if __name__ == "__main__":
         winner = game.check_win()
         print("Winner:", winner)
     else:
+
         game.go_to_end_game()
         game.draw_state()
+        # make preds
+        preds = np.random.rand(49)
+        game.draw_state_with_preds(preds)
         print(game.check_win())
         print(game.get_player_turn())
-        print(game.get_nn_input())
+        # print(game.get_nn_input())
         # Fore color
         print(f"{Fore.RED}Hello World {Fore.RESET}Hello World")
         # print(game.get_nn_input_advanced())

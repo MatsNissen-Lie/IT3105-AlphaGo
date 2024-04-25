@@ -14,7 +14,7 @@ Configuration of neural network model
 """
 INPUT_SHAPE = BOARD_SIZE * BOARD_SIZE + 1
 OUTPUT_SHAPE = BOARD_SIZE * BOARD_SIZE
-LAYERS = [64, 64]
+LAYERS = [124, 124]
 ACTIVATION = Activation.RELU
 OPTIMIZER = Optimizer.ADAM
 LEARNING_RATE = 1e-3

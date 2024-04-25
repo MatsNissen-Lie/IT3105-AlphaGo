@@ -94,9 +94,9 @@ class Actor:
                 self.replay_buffer.add(X, Y)
                 # print move from parent
                 # print(f"\nPlayer {game.get_player()}: {best_node.move_from_parent}")
+                game.draw_state_with_preds(Y)
                 game.make_move(best_node.move_from_parent)
                 root = best_node
-                game.draw_state()
                 # print move probilities
                 # print(f"Move probabilities: {Y}")
                 # mcts.draw_tree()
@@ -115,7 +115,7 @@ class Actor:
 if __name__ == "__main__":
     train = True
     test_replaybuffer = False
-    test_simulation_time = False
+    test_simulation_time = True
 
     if train:
         anet = ANet2()
@@ -125,12 +125,12 @@ if __name__ == "__main__":
         anet = ANet2()
         actor = Actor(
             anet=anet,
-            simulations=100,
+            simulations=2000,
             board_size=4,
-            number_of_games=50,
+            number_of_games=1,
             save_interval=10,
-            epsilon_decay=0.5,
-            min_epsilon=0,
+            epsilon_decay=0.1,
+            min_epsilon=0.1,
             startEpsilon=True,
         )
         actor.train()

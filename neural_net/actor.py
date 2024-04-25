@@ -95,7 +95,9 @@ class Actor:
                 # print(f"\nPlayer {game.get_player()}: {best_node.move_from_parent}")
                 game.make_move(best_node.move_from_parent)
                 root = best_node
-                # game.draw_state()
+                game.draw_state()
+                # print move probilities
+                print(f"Move probabilities: {Y}")
                 # mcts.draw_tree()
             game.draw_state()
             print(f"Game {game_number+1} finished. Winner: {game.check_win()}")
@@ -110,10 +112,10 @@ class Actor:
 
 
 if __name__ == "__main__":
-    train = not True
+    train = False
     test_replaybuffer = False
-
     test_simulation_time = True
+
     if train:
         anet = ANet()
         actor = Actor(anet=anet)
@@ -125,7 +127,7 @@ if __name__ == "__main__":
             simulations=2,
             board_size=4,
             number_of_games=1,
-            save_interval=1,
+            save_interval=10,
             epsilon_decay=0,
             min_epsilon=0,
             startEpsilon=True,

@@ -71,17 +71,15 @@ class ANet:
         return model
 
     def train(self, x_train, y_train, epochs=EPOCHS):
-        self.model.fit(x_train, y_train, epochs=epochs)
+        self.model.fit(x_train, y_train)
 
     def train_batch(self, batch: List[Tuple]):
-        feature_matrix = []
-        probability_distribution = []
+        states, targets = [], []
         for x, D in batch:
-            feature_matrix.append(x)
-            probability_distribution.append(D)
-        feature_matrix = np.array(feature_matrix)
-        probability_distribution = np.array(probability_distribution)
-        self.train(feature_matrix, probability_distribution)
+            states.append(x)
+            targets.append(D)
+        states, targets = np.array(states), np.array(targets)
+        self.train(states, targets)
 
     def predict(self, x: np.ndarray):
         return self.model.predict(x, verbose=0, batch_size=5000)

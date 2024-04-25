@@ -150,12 +150,21 @@ class TargetPolicyTest:
 
         curr_state = curr_node.game_state.clone()
         while not curr_state.is_terminal():
+
+            # print(f"\n\nPlayer {curr_state.get_player()}")
             if random.random() < epsilon:
                 possible_moves = curr_state.get_legal_moves()
                 move = random.choice(possible_moves)
             else:
-                pred = self.anet.predict(curr_state.get_nn_input())
+                time_start = time.time()
+                pred = self.anet.predict(curr_state.get_nn_input(), verbose=1)
+                # time taken in milliseconds
+                time_taken = (time.time() - time_start) * 1000
+                print(f"Time taken: {time_taken:.2f}ms")
+                # print preds rounded to 2 decimals in a four by four matrix
+                # print(np.round(pred.reshape(4, 4), 2))
                 move = curr_state.get_move_from_nn_output(pred)
+
             curr_state.make_move(move)
             # curr_state.draw_state()
         return curr_state

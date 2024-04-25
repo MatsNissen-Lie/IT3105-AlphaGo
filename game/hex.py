@@ -32,6 +32,9 @@ class Hex:
             and self.board[row][col] == 0
         )
 
+    def isAvailable_move(self, row, col):
+        return self.board[row][col] == 0
+
     def get_legal_moves(self):
         """
         Return a list of all legal moves from the current state.
@@ -216,15 +219,16 @@ class Hex:
         Returns:
             Tuple[int, int]: The move with the highest visit count.
         """
-        move_visits = self.transform_nn_target_to_moves(nn_output[0])
-        # filter out illegal moves
-        move_visits = [
-            (move, visits)
-            for move, visits in move_visits
-            if self.is_valid_move(move[0], move[1])
-        ]
-        move_visits.sort(key=lambda x: x[1], reverse=True)
-        best_move = move_visits[0][0]
+
+        # get max valid move
+        best_move = None
+        max_prob = 0
+        for i, prob in enumerate(nn_output[0]):
+            row = i // self.board_size
+            col = i % self.board_size
+            if self.isAvailable_move(row, col) and prob > max_prob:
+                max_prob = prob
+                best_move = (row, col)
         return best_move
 
     def get_nn_player(self):

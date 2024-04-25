@@ -53,7 +53,7 @@ class ANet:
     def build_model(self) -> keras.models.Model:
         model: keras.models.Model = Sequential()
         # Adding the input layer //TODO: maybe make this with the
-        model.add(keras.layers.InputLayer(shape=(self.input_shape,)))
+        model.add(keras.layers.InputLayer(input_shape=(self.input_shape,)))
 
         # Adding hidden layers
         for layer_size in self.layers:

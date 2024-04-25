@@ -28,10 +28,10 @@ from neural_net.enums import Activation, Optimizer
 from keras import activations
 import shutil
 
-from utils import get_model_location, get_tournament_name
+from utils import get_model_location, get_train_session_name
 
 
-class ANet:
+class ANet2:
     def __init__(
         self,
         activation: Activation = ACTIVATION,
@@ -142,7 +142,7 @@ if __name__ == "__main__":
 
         print(board_rep)
         print(target)
-        anet = ANet(
+        anet = ANet2(
             input_shape=game.board_size**2 + 1,
             output_shape=game.board_size**2,
         )
@@ -150,7 +150,7 @@ if __name__ == "__main__":
         minibatch = [(board_rep, target), (board_rep, target)]
 
         anet.train_batch(minibatch)
-        tournament_name = get_tournament_name(game.board_size)
+        tournament_name = get_train_session_name(game.board_size)
         anet.save_model(tournament_name)
         # res = anet.predict(np.expand_dims(board_rep, axis=0))
         # next_move = game.get_move_from_nn_output(res)

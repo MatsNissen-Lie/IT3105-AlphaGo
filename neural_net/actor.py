@@ -14,6 +14,7 @@ from config.params import (
 )
 from game.hex import Hex
 from neural_net.anet import ANet, load_model
+from neural_net.onnx import ANet2
 from tree_search import MCTS
 from utils import get_train_session_name
 
@@ -44,7 +45,7 @@ class ReplayBuffer:
 class Actor:
     def __init__(
         self,
-        anet: ANet,
+        anet: any,
         replay_buffer: ReplayBuffer = ReplayBuffer(REPLAY_BUFFER_SIZE),
         board_size: int = BOARD_SIZE,
         simulations: int = SIMULATIONS,
@@ -121,10 +122,10 @@ if __name__ == "__main__":
         actor = Actor(anet=anet)
         actor.train()
     elif test_simulation_time:
-        anet = ANet()
+        anet = ANet2()
         actor = Actor(
             anet=anet,
-            simulations=2,
+            simulations=1000,
             board_size=4,
             number_of_games=1,
             save_interval=10,

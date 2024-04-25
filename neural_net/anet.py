@@ -28,7 +28,7 @@ from neural_net.enums import Activation, Optimizer
 from keras import activations
 import shutil
 
-from utils import get_model_location, get_tournament_name
+from utils import get_model_location, get_train_session_name
 
 
 class ANet:
@@ -116,8 +116,8 @@ class ANet:
             raise ValueError("Invalid optimizer")
 
 
-def load_model(date, num, game_name="hex", board_size=7):
-    path = f"../models/{game_name}/{board_size}x{board_size}/{date}/model_{num}.h5"
+def load_model(folder, num, game_name="hex", board_size=7):
+    path = f"../models/{game_name}/{board_size}x{board_size}/{folder}/model_{num}.h5"
     path = os.path.join(os.path.dirname(__file__), path)
     return keras.models.load_model(path)
 
@@ -150,7 +150,7 @@ if __name__ == "__main__":
         minibatch = [(board_rep, target), (board_rep, target)]
 
         anet.train_batch(minibatch)
-        tournament_name = get_tournament_name(game.board_size)
+        tournament_name = get_train_session_name(game.board_size)
         anet.save_model(tournament_name)
         # res = anet.predict(np.expand_dims(board_rep, axis=0))
         # next_move = game.get_move_from_nn_output(res)

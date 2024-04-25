@@ -139,3 +139,41 @@ class TargetPolicy:
                 move = curr_state.get_move_from_nn_output(pred)
             curr_state.make_move(move)
         return curr_state
+
+
+class TargetPolicyTest:
+
+    def __init__(self, anet: ANet):
+        self.anet = anet
+
+    def __call__(self, curr_node: Node, epsilon: float = 0.1) -> GameInterface:
+
+        curr_state = curr_node.game_state.clone()
+        while not curr_state.is_terminal():
+            if random.random() < epsilon:
+                possible_moves = curr_state.get_legal_moves()
+                move = random.choice(possible_moves)
+            else:
+                pred = self.anet.predict(curr_state.get_nn_input())
+                move = curr_state.get_move_from_nn_output(pred)
+            curr_state.make_move(move)
+            # curr_state.draw_state()
+        return curr_state
+
+
+if __name__ == "__main__":
+    import time
+    from neural_net.anet import load_model
+    from game.hex import Hex
+
+    game_size = 4
+    node = Node(Hex(game_size))
+
+    anet = load_model("tournament3", 0, "hex", board_size=game_size)
+
+    startTime = time.time()
+    policy = TargetPolicyTest(anet)
+    state = policy(node, 0)
+    taken_time = time.time() - startTime
+    print(f"Time taken: {taken_time:.2f}s")
+    print(f"Winner: {state.check_win()}")

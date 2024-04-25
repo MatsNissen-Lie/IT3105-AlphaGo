@@ -118,7 +118,7 @@ class Hex:
 
         return False
 
-    def draw_state(self):
+    def draw_state(self, preds=None):
         board = self.board
         column_names = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         rows, cols, indent = len(board), len(board[0]), 0
@@ -126,61 +126,29 @@ class Hex:
         tops = " " * 5 + (" " * 3).join("-" * cols)
         roof = " " * 4 + "/ \\" + "_/ \\" * (cols - 1)
         print(headings), print(tops), print(roof)
-        # color_mapping = lambda i: " WB"[int(i)]
-        color_mapping = lambda i: (
-            f"{Back.BLUE}{Fore.WHITE} {Style.RESET_ALL}"
-            if int(i) == 1
-            else (f"{Back.RED}{Fore.WHITE} {Style.RESET_ALL}" if int(i) == 2 else f" ")
-        )
-        for r in range(rows):
-            row_mid = " " * indent
-            row_mid += " {} | ".format(r + 1)
-            row_mid += " | ".join(map(color_mapping, board[r]))
-            row_mid += " | {} ".format(r + 1)
-            print(row_mid)
-            row_bottom = " " * indent
-            row_bottom += " " * 3 + " \\_/" * cols
-            if r < rows - 1:
-                row_bottom += " \\"
-            print(row_bottom)
-            indent += 2
-        headings = " " * (indent - 2) + headings
-        print(headings)
 
-    def draw_state_with_preds(self, preds):
-        # print player to move
-        # I want to add the predictions to the board
-
-        def color_mapping(cell_value, index):
+        def color_mapping(cell_value, index=None):
             if int(cell_value) == 1:
-                cell_display = f"{Back.BLUE} {Style.RESET_ALL}"
+                cell_display = f"{Back.BLUE}{Fore.WHITE} {Style.RESET_ALL}"
             elif int(cell_value) == 2:
-                cell_display = f"{Back.RED} {Style.RESET_ALL}"
+                cell_display = f"{Back.RED}{Fore.WHITE} {Style.RESET_ALL}"
             else:
-                # round off to a whole number int
-                prediction = int(preds[index] * 10)
-
-                cell_display = f"{prediction}"
+                if preds is not None and index is not None:
+                    prediction = int(preds[index] * 10)
+                    cell_display = f"{prediction}"
+                else:
+                    cell_display = " "
             return cell_display
 
-        print(
-            f"Player to move: {self.player_turn} {color_mapping(self.player_turn, 0)}"
-        )
-
-        board = self.board
-        column_names = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        rows, cols, indent = len(board), len(board[0]), 0
-        headings = " " * 5 + (" " * 3).join(column_names[:cols])
-        tops = " " * 5 + (" " * 3).join("-" * cols)
-        roof = " " * 4 + "/ \\" + "_/ \\" * (cols - 1)
-        print(headings), print(tops), print(roof)
-
         for r in range(rows):
             row_mid = " " * indent
             row_mid += " {} | ".format(r + 1)
-            row_mid += " | ".join(
-                color_mapping(board[r][c], r * cols + c) for c in range(cols)
-            )
+            if preds is None:
+                row_mid += " | ".join(color_mapping(cell) for cell in board[r])
+            else:
+                row_mid += " | ".join(
+                    color_mapping(board[r][c], r * cols + c) for c in range(cols)
+                )
             row_mid += " | {} ".format(r + 1)
             print(row_mid)
             row_bottom = " " * indent
@@ -191,6 +159,11 @@ class Hex:
             indent += 2
         headings = " " * (indent - 2) + headings
         print(headings)
+
+        if preds is not None:
+            print(
+                f"Player to move: {self.player_turn} {color_mapping(self.player_turn, 0)}"
+            )
 
     def move_to_str(self, move):
         if move == None:
@@ -326,7 +299,7 @@ if __name__ == "__main__":
         game.draw_state()
         # make preds
         preds = np.random.rand(49)
-        game.draw_state_with_preds(preds)
+        game.draw_state(preds)
         print(game.check_win())
         print(game.get_player_turn())
         # print(game.get_nn_input())

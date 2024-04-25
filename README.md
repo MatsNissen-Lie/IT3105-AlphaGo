@@ -26,4 +26,6 @@ TODO: make sure that a node is not added to the tree if it is alrady in the tree
 - numpy
 - matplotlib
 - kreas
-- tensorflow
+- tensorflow==2.15
+- tf2onnx
+- onnxruntime

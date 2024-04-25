@@ -94,7 +94,7 @@ class Actor:
                 self.replay_buffer.add(X, Y)
                 # print move from parent
                 # print(f"\nPlayer {game.get_player()}: {best_node.move_from_parent}")
-                game.draw_state_with_preds(Y)
+                # game.draw_state_with_preds(Y)
                 game.make_move(best_node.move_from_parent)
                 root = best_node
                 # print move probilities
@@ -125,10 +125,10 @@ if __name__ == "__main__":
         anet = ANet2()
         actor = Actor(
             anet=anet,
-            simulations=2000,
+            simulations=10,
             board_size=4,
             number_of_games=1,
-            save_interval=10,
+            save_interval=1,
             epsilon_decay=0.1,
             min_epsilon=0.1,
             startEpsilon=True,

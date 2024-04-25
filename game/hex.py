@@ -182,8 +182,6 @@ class Hex:
                 color_mapping(board[r][c], r * cols + c) for c in range(cols)
             )
             row_mid += " | {} ".format(r + 1)
-            if r < len(preds):
-                row_mid += f" | {preds[r]:.2f}"
             print(row_mid)
             row_bottom = " " * indent
             row_bottom += " " * 3 + " \\_/" * cols

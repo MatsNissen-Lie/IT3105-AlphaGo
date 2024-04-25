@@ -57,6 +57,7 @@ class Topp:
                 pred = model2.predict(state)
                 move = game.get_move_from_nn_output(pred)
             game.make_move(move)
+            game.draw_state()
         winner = game.check_win()
         if winner == 1:
             return 1
@@ -121,5 +122,5 @@ if __name__ == "__main__":
     #         "/hex/4x4/2024-04-24/model_5.h5",
     #     ]
     # )
-    tourney.load_models2(4, "train_session2", max=2)
+    tourney.load_models2(4, "train_session4", max=2)
     tourney.play_tournament()

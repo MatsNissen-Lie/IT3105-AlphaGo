@@ -84,8 +84,10 @@ class ANet:
         self.train(feature_matrix, probability_distribution)
 
     def predict(self, x: np.ndarray):
-        # return self.model.predict(x, verbose=1, batch_size=5000)
-        return self.model.predict(x, batch_size=5000)
+        return self.model.predict(x, verbose=0, batch_size=5000)
+        # TODO: check this
+        # print("prediction")
+        # return self.model.predict(x)
 
     def save_model(self, tournament, game_name="hex"):
         board_size = int(sqrt(self.output_shape))

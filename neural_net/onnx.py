@@ -49,10 +49,11 @@ class ANet2:
         self.input_shape = input_shape
         self.output_shape = output_shape
         self.model: keras.models.Model = self.build_model()
+        self.onix = None
 
     def build_model(self) -> keras.models.Model:
         model = keras.Sequential()
-        
+
         model.add(keras.Input(shape=(self.input_shape,)))
 
         # Adding hidden layers
@@ -60,19 +61,32 @@ class ANet2:
             model.add(keras.layers.Dense(layer_size, activation=self.activation.value))
 
         # Adding the output layer
-        model.add(keras.layers.Dense(self.output_shape, activation="softmax"))  # Using softmax for multi-class classification
+        model.add(
+            keras.layers.Dense(self.output_shape, activation="softmax")
+        )  # Using softmax for multi-class classification
 
         # Compile the model
         optimizer = self.get_optimizer()
-        model.compile(optimizer=optimizer, loss="categorical_crossentropy", metrics=["accuracy"])
+        model.compile(
+            optimizer=optimizer, loss="categorical_crossentropy", metrics=["accuracy"]
+        )
+        self.build_onix()
+        return model
 
-        input_signature = [tf.TensorSpec(model.inputs[0].shape, model.inputs[0].dtype, name='x')]
-        onnx_model, _ = tf2onnx.convert.from_keras(model, input_signature, opset=13)
-
-        return onnx_model
+    def build_onix(self):
+        input_signature = [
+            tf.TensorSpec(
+                self.model.inputs[0].shape, self.model.inputs[0].dtype, name="x"
+            )
+        ]
+        onnx_model, _ = tf2onnx.convert.from_keras(
+            self.model, input_signature, opset=13
+        )
+        self.onix = onnx_model
 
     def train(self, x_train, y_train, epochs=EPOCHS):
         self.model.fit(x_train, y_train, epochs=epochs)
+        self.build_onix()
 
     def train_batch(self, batch: List[Tuple]):
         feature_matrix = []
@@ -87,7 +101,7 @@ class ANet2:
     def predict(self, x: np.ndarray):
         x = x.astype(np.float32)
         onnx_session = onnxruntime.InferenceSession(self.model.SerializeToString())
-        return onnx_session.run(None, {'x': x})[0]
+        return onnx_session.run(None, {"x": x})[0]
 
     def save_model(self, tournament, game_name="hex"):
         board_size = int(sqrt(self.output_shape))

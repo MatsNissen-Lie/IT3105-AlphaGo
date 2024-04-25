@@ -22,10 +22,10 @@ TODO: make sure that a node is not added to the tree if it is alrady in the tree
 ## packages
 
 - PrettyPrintTree
-  https://github.com/AharonSambol/PrettyPrintTree?tab=readme-ov-file#install
 - numpy
-- matplotlib
 - kreas
 - tensorflow==2.15
 - tf2onnx
 - onnxruntime
+- tabulate
+- colorama

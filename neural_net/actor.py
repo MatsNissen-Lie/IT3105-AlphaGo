@@ -118,7 +118,7 @@ if __name__ == "__main__":
     test_simulation_time = True
 
     if train:
-        anet = ANet()
+        anet = ANet2()
         actor = Actor(anet=anet)
         actor.train()
     elif test_simulation_time:

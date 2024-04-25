@@ -30,5 +30,5 @@ def get_model_location(board_size, train_session, game_name="hex"):
 
 
 if __name__ == "__main__":
-    print(get_tournament_name(4))
+    print(get_train_session_name(4))
     # print(get_model_location(4, "tournament0"))

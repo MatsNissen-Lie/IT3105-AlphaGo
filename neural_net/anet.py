@@ -40,7 +40,7 @@ class ANet:
         learning_rate: float = LEARNING_RATE,
         input_shape: int = INPUT_SHAPE,
         output_shape: int = OUTPUT_SHAPE,
-        # model = None
+        model: keras.models.Sequential = None,
     ):
         self.activation = activation
         self.optimizer = optimizer
@@ -48,7 +48,7 @@ class ANet:
         self.learning_rate = learning_rate
         self.input_shape = input_shape
         self.output_shape = output_shape
-        self.model: keras.models.Model = self.build_model()
+        self.model: keras.models.Sequential = model if model else self.build_model()
 
     def build_model(self) -> keras.models.Model:
         model: keras.models.Model = Sequential()

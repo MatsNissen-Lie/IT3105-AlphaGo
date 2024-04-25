@@ -14,7 +14,7 @@ from config.params import (
 )
 from game.hex import Hex
 from neural_net.anet import ANet, load_model
-from neural_net.onnx import ANet2
+from neural_net.onix import ANet2
 from tree_search import MCTS
 from utils import get_train_session_name
 
@@ -125,7 +125,7 @@ if __name__ == "__main__":
         anet = ANet2()
         actor = Actor(
             anet=anet,
-            simulations=1000,
+            simulations=10,
             board_size=4,
             number_of_games=1,
             save_interval=10,

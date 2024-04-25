@@ -49,7 +49,7 @@ class ANet2:
         self.input_shape = input_shape
         self.output_shape = output_shape
         self.model: keras.models.Model = self.build_model()
-        self.onix = None
+        self.onix = self.build_onix()
 
     def build_model(self) -> keras.models.Model:
         model = keras.Sequential()
@@ -70,7 +70,6 @@ class ANet2:
         model.compile(
             optimizer=optimizer, loss="categorical_crossentropy", metrics=["accuracy"]
         )
-        self.build_onix()
         return model
 
     def build_onix(self):
@@ -82,11 +81,11 @@ class ANet2:
         onnx_model, _ = tf2onnx.convert.from_keras(
             self.model, input_signature, opset=13
         )
-        self.onix = onnx_model
+        return onnx_model
 
     def train(self, x_train, y_train, epochs=EPOCHS):
         self.model.fit(x_train, y_train, epochs=epochs)
-        self.build_onix()
+        self.onix = self.build_onix()
 
     def train_batch(self, batch: List[Tuple]):
         feature_matrix = []
@@ -100,7 +99,7 @@ class ANet2:
 
     def predict(self, x: np.ndarray):
         x = x.astype(np.float32)
-        onnx_session = onnxruntime.InferenceSession(self.model.SerializeToString())
+        onnx_session = onnxruntime.InferenceSession(self.onix.SerializeToString())
         return onnx_session.run(None, {"x": x})[0]
 
     def save_model(self, tournament, game_name="hex"):

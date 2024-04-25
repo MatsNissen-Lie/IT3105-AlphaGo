@@ -84,7 +84,7 @@ class ANet2:
         return onnx_model
 
     def train(self, x_train, y_train, epochs=EPOCHS):
-        self.model.fit(x_train, y_train, epochs=epochs)
+        self.model.fit(x_train, y_train)
         self.onix = self.build_onix()
 
     def train_batch(self, batch: List[Tuple]):

@@ -122,7 +122,7 @@ if __name__ == "__main__":
         anet = ANet()
         actor = Actor(
             anet=anet,
-            simulations=1,
+            simulations=2,
             board_size=4,
             number_of_games=1,
             save_interval=1,

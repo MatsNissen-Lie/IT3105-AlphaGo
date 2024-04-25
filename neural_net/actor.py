@@ -98,7 +98,7 @@ class Actor:
                 root = best_node
                 game.draw_state()
                 # print move probilities
-                print(f"Move probabilities: {Y}")
+                # print(f"Move probabilities: {Y}")
                 # mcts.draw_tree()
             game.draw_state()
             print(f"Game {game_number+1} finished. Winner: {game.check_win()}")
@@ -125,7 +125,7 @@ if __name__ == "__main__":
         anet = ANet2()
         actor = Actor(
             anet=anet,
-            simulations=10,
+            simulations=100,
             board_size=4,
             number_of_games=1,
             save_interval=10,

@@ -25,7 +25,6 @@ import tensorflow as tf
 import keras
 from game.hex import Hex
 from neural_net.enums import Activation, Optimizer
-from keras import activations
 import shutil
 
 from utils import get_model_location, get_train_session_name

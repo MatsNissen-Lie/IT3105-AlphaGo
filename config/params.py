@@ -7,8 +7,7 @@ from neural_net.enums import Activation, Optimizer
 
 BOARD_SIZE = 4
 TIME_LIMIT = 2
-MAX_TIME_LIMIT = 7
-NUM_OF_MODELS = 6
+MAX_TIME_LIMIT = 7  # not used
 
 """
 Configuration of neural network model

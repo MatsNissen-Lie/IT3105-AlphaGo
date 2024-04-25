@@ -3,6 +3,7 @@ from keras.models import load_model
 import os
 import tabulate as tb
 from game.hex import Hex
+from neural_net.onix import ANet2
 from utils import get_model_location
 
 
@@ -38,7 +39,8 @@ class Topp:
             # # add only 4 and 0
             # if num % 4 != 0:
             #     continue
-            self.models.append(load_model(next_location))
+            onix = ANet2(model=load_model(next_location))
+            self.models.append(onix)
             self.model_names.append(next_location.split("/")[-1][:-3])
         self.init_scores()
 
@@ -90,7 +92,6 @@ class Topp:
 
     def show_results(self):
         print("\nResults of the tournament")
-        print(self.model_names)
         results_to_print = [
             [name] + stats for stats, name in zip(self.scores_lists, self.model_names)
         ]
@@ -120,5 +121,5 @@ if __name__ == "__main__":
     #         "/hex/4x4/2024-04-24/model_5.h5",
     #     ]
     # )
-    tourney.load_models2(4, "tournament3", max=2)
+    tourney.load_models2(4, "train_session2", max=2)
     tourney.play_tournament()

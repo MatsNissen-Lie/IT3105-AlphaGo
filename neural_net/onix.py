@@ -47,7 +47,7 @@ class ANet2:
         self.learning_rate = learning_rate
         self.input_shape = input_shape
         self.output_shape = output_shape
-        self.model: keras.models.Sequential = model if model else self.build_model()
+        self.model: keras.models.Model = model if model else self.build_model()
         self.onix = self.build_onix()
 
     def build_model(self) -> keras.models.Model:
@@ -101,10 +101,10 @@ class ANet2:
         onnx_session = onnxruntime.InferenceSession(self.onix.SerializeToString())
         return onnx_session.run(None, {"x": x})[0]
 
-    def save_model(self, tournament, game_name="hex"):
+    def save_model(self, train_session, game_name="hex"):
         board_size = int(sqrt(self.output_shape))
         location, params_location = get_model_location(
-            board_size, tournament, game_name
+            board_size, train_session, game_name
         )
         print(location)
         keras.saving.save_model(self.model, location)
@@ -128,8 +128,8 @@ class ANet2:
             raise ValueError("Invalid optimizer")
 
 
-def load_model(date, num, game_name="hex", board_size=7):
-    path = f"../models/{game_name}/{board_size}x{board_size}/{date}/model_{num}.h5"
+def load_model(folder, num, game_name="hex", board_size=7):
+    path = f"../models/{game_name}/{board_size}x{board_size}/{folder}/model_{num}.h5"
     path = os.path.join(os.path.dirname(__file__), path)
     return keras.models.load_model(path)
 

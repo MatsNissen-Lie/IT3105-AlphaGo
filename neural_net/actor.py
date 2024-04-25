@@ -113,9 +113,9 @@ class Actor:
 
 
 if __name__ == "__main__":
-    train = False
+    train = True
     test_replaybuffer = False
-    test_simulation_time = True
+    test_simulation_time = False
 
     if train:
         anet = ANet2()
@@ -127,9 +127,9 @@ if __name__ == "__main__":
             anet=anet,
             simulations=100,
             board_size=4,
-            number_of_games=1,
+            number_of_games=50,
             save_interval=10,
-            epsilon_decay=0,
+            epsilon_decay=0.5,
             min_epsilon=0,
             startEpsilon=True,
         )

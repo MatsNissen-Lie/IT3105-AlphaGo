@@ -82,8 +82,6 @@ class Actor:
             mcts = MCTS(game, self.anet, self.simulations)
             root = mcts.get_root()
             print(f"Game {game_number+1} started. Epsilon: {epsilon}")
-            print(f"Starting player: {starting_player}")
-
             # take the time of each game
 
             start_time = time.time()
@@ -94,15 +92,15 @@ class Actor:
                 self.replay_buffer.add(X, Y)
                 # print move from parent
                 # print(f"\nPlayer {game.get_player()}: {best_node.move_from_parent}")
-                # game.draw_state_with_preds(Y)
+                game.draw_state(Y)
                 game.make_move(best_node.move_from_parent)
                 root = best_node
                 # print move probilities
-                # print(f"Move probabilities: {Y}")
                 # mcts.draw_tree()
+            time_taken = time.time() - start_time
             game.draw_state()
             print(f"Game {game_number+1} finished. Winner: {game.check_win()}")
-            time_taken = time.time() - start_time
+            print(f"Starting player: {starting_player}")
             print(f"Time taken: {time_taken//60:.0f}m {time_taken%60:.0f}s")
 
             minibatch = self.replay_buffer.sample()

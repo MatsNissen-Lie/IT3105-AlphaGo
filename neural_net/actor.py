@@ -195,6 +195,13 @@ if __name__ == "__main__":
                 "onnix",
                 1030,
             ],
+            [
+                "model_4",
+                "4x4",
+                "124x124x124",
+                "onnix",
+                1130,
+            ],
         ]
         import tabulate
 

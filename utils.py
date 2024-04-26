@@ -32,3 +32,14 @@ def get_model_location(board_size, train_session, game_name="hex"):
 if __name__ == "__main__":
     print(get_train_session_name(4))
     # print(get_model_location(4, "tournament0"))
+    import tensorflow as tf
+
+    # Configuring TensorFlow to use all logical cores available
+    num_threads = tf.config.threading.get_inter_op_parallelism_threads()
+    print(f"Number of threads: {num_threads}")
+
+    # tf.config.threading.set_intra_op_parallelism_threads(num_threads)
+    # tf.config.threading.set_inter_op_parallelism_threads(num_threads)
+    from tensorflow.python.client import device_lib
+
+    print(device_lib.list_local_devices())

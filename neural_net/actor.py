@@ -2,6 +2,12 @@ import random
 import time
 
 import numpy as np
+
+import importlib
+import config.params
+
+importlib.reload(config.params)
+# reload the import config.params
 from config.params import (
     BOARD_SIZE,
     EPSILON_DECAY,
@@ -12,6 +18,7 @@ from config.params import (
     SIMULATIONS,
     REPLAY_BATCH_SIZE,
 )
+
 from game.hex import Hex
 from neural_net.anet import ANet, load_model
 from neural_net.onix import ANet2
@@ -73,6 +80,8 @@ class Actor:
         )
 
     def train(self):
+        # how many games
+        print(f"Number of games: {self.number_of_games}")
         train_session = get_train_session_name(self.board_size)
         for game_number in range(self.number_of_games):
             # for the first iteration epsoilon is 1. No neural network is used. After the first iteration, the epsilon is decayed.

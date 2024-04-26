@@ -13,7 +13,7 @@ class Topp:
         folder_path = current_dir + "/models"
         self.model_path = folder_path  # Replace "/path/to/models/folder" with the actual path to your models folder
         self.num_games = num_games
-        self.model_names = []
+        # self.model_names = []
         self.models = []
         # I want a list of scores for each model
         self.scores_lists = []
@@ -40,12 +40,15 @@ class Topp:
             # if num % 4 != 0:
             #     continue
             onix = ANet2(model=load_model(next_location))
-            self.models.append(onix)
-            self.model_names.append(next_location.split("/")[-1][:-3])
+            self.models.append((onix, next_location.split("/")[-1][:-3]))
+            # self.model_names.append(next_location.split("/")[-1][:-3])
         self.init_scores()
 
-    def play_game(self, model1, model2):
-
+    def play_game(self, model1, model2, verbose=False):
+        model1, name1 = model1
+        model2, name2 = model2
+        if verbose:
+            print(f"Playing game between {name1} and {name2}")
         game = Hex(4)
         while not game.is_terminal():
             if game.player_turn == 1:
@@ -57,7 +60,8 @@ class Topp:
                 pred = model2.predict(state)
                 move = game.get_move_from_nn_output(pred)
             game.make_move(move)
-            game.draw_state()
+            if verbose:
+                game.draw_state()
         winner = game.check_win()
         if winner == 1:
             return 1
@@ -93,8 +97,9 @@ class Topp:
 
     def show_results(self):
         print("\nResults of the tournament")
+        model_names = [model[1] for model in self.models]
         results_to_print = [
-            [name] + stats for stats, name in zip(self.scores_lists, self.model_names)
+            [name] + stats for stats, name in zip(self.scores_lists, model_names)
         ]
         print(
             tb.tabulate(
@@ -122,5 +127,8 @@ if __name__ == "__main__":
     #         "/hex/4x4/2024-04-24/model_5.h5",
     #     ]
     # )
-    tourney.load_models2(4, "train_session4", max=2)
+    tourney.load_models2(4, "train_session0")
     tourney.play_tournament()
+
+    tourney.play_game(tourney.models[0], tourney.models[-1], verbose=True)
+    tourney.play_game(tourney.models[-1], tourney.models[0], verbose=True)

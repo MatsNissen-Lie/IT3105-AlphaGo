@@ -204,7 +204,7 @@ class Hex:
         for move, visits in move_visits:
             index = move[0] * self.board_size + move[1]
             visit_counts[index] = visits
-        total_visit_count = sum(visit_counts)
+        total_visit_count = max(1, sum(visit_counts))
         distribution = np.array([count / total_visit_count for count in visit_counts])
         return distribution
 

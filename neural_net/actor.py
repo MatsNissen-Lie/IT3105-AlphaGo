@@ -105,7 +105,10 @@ class Actor:
             game.draw_state()
             print(f"Game {game_number+1} finished. Winner: {game.check_win()}")
             print(f"Starting player: {starting_player}")
-            print(f"Time taken: {time_taken//60:.0f}m {time_taken%60:.0f}s")
+            print(
+                f"Time taken: {time_taken//60:.0f}m {time_taken%60:.0f}s and {(time_taken%60*1000%1000):.2f}ms"
+            )
+            # print(f"Total time taken: {time_taken*1000:.2f}ms")
 
             minibatch = self.replay_buffer.sample()
             self.anet.train_batch(minibatch)
@@ -131,10 +134,10 @@ if __name__ == "__main__":
         )
         actor = Actor(
             anet=anet,
-            simulations=1000,
+            simulations=1,
             board_size=game.board_size,
             number_of_games=1,
-            save_interval=1,
+            save_interval=10,
             epsilon_decay=0.1,
             min_epsilon=0.1,
             startEpsilon=True,
@@ -177,3 +180,34 @@ if __name__ == "__main__":
         print(next_move)
         print(game.move_to_str(next_move))
         assert game.move_to_str(next_move) == "A7"
+
+    def print_reqords():
+        from config.params import BOARD_SIZE, LAYERS
+
+        print(f"Board size: {BOARD_SIZE}")
+        print(f"Layers: {LAYERS}")
+        array_time = [
+            # model name, borad size, nural net size, anet name, ms per rollout
+            [
+                "model_4",
+                "4x4",
+                "124x124x124",
+                "onnix",
+                1030,
+            ],
+        ]
+        import tabulate
+
+        print(
+            tabulate.tabulate(
+                array_time,
+                headers=[
+                    "Model Name",
+                    "Board Size",
+                    "Neural Net Size",
+                    "ANet Name",
+                    "ms per sim",
+                ],
+                tablefmt="pretty",
+            )
+        )

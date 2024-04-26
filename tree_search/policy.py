@@ -1,9 +1,9 @@
 import random
-from neural_net.anet import ANet
 from tree_search.node import Node
 from game.game_interface import GameInterface
 import numpy as np
 from typing import List, Tuple
+from neural_net.anet import ANet
 
 
 class TreePlolicy:
@@ -175,13 +175,18 @@ if __name__ == "__main__":
     from neural_net.anet import load_model
     from game.hex import Hex
     from neural_net.onix import ANet2
+    from neural_net.anet import ANet
 
-    game_size = 4
+    game_size = 7
     node = Node(Hex(game_size))
 
-    model = load_model("train_session0", 4, "hex", board_size=game_size)
-    anet = ANet(model)
-    # anet = ANet2(model=anet)
+    # model = load_model("train_session0", 4, "hex", board_size=game_size)
+    # anet = ANet(model)
+
+    anet = ANet2(
+        input_shape=game_size**2 + 1,
+        output_shape=game_size**2,
+    )
 
     startTime = time.time()
     policy = TargetPolicyTest(anet)
@@ -207,6 +212,20 @@ if __name__ == "__main__":
                 "124x124",
                 "onnx",
                 10,
+            ],
+            [
+                "random_placement",
+                "4x4",
+                "512x256",
+                "onnx",
+                75,
+            ],
+            [
+                "random_placement",
+                "4x4",
+                "124x124x124",
+                "onnx",
+                57,
             ],
         ]
         import tabulate

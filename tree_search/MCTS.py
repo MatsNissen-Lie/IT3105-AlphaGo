@@ -5,7 +5,6 @@ from config.params import SIMULATIONS, TIME_LIMIT
 from game.game_interface import GameInterface
 from game.hex import Hex
 from game.nim import Nim
-from neural_net.anet import ANet
 from tree_search.policy import DefaultPolicy, TargetPolicy, TreePlolicy
 from tree_search.node import Node
 from PrettyPrint import PrettyPrintTree
@@ -157,6 +156,8 @@ class MCTS:
 
 
 if __name__ == "__main__":
+    from neural_net.anet import ANet
+
     game = Hex()
     game.go_to_end_game()
     # game = Nim(8, 3)

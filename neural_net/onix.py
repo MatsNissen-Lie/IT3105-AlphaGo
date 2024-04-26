@@ -3,7 +3,6 @@ This module contains a class to build a neural network model by using tf.Keras
 """
 
 from datetime import datetime
-from enum import Enum
 from math import sqrt
 import os
 from typing import List, Tuple
@@ -25,9 +24,11 @@ from config.params import (
 import tensorflow as tf
 import keras
 from game.hex import Hex
-from enums import Activation, Optimizer
+
+
 import shutil
 
+from config.enums import Activation, Optimizer
 from utils import get_model_location, get_train_session_name
 
 
@@ -45,6 +46,7 @@ class ANet2:
         self.activation = activation
         self.optimizer = optimizer
         self.layers = layers
+        print(f"Layers: {layers}")
         self.learning_rate = learning_rate
         self.input_shape = input_shape
         self.output_shape = output_shape

@@ -24,7 +24,7 @@ from keras.layers import Dense
 from keras.optimizers import Adam, RMSprop, SGD, Adagrad
 import keras
 from game.hex import Hex
-from neural_net.enums import Activation, Optimizer
+from config.enums import Activation, Optimizer
 from keras import activations
 import shutil
 

@@ -3,11 +3,6 @@ import time
 
 import numpy as np
 
-import importlib
-import config.params
-
-importlib.reload(config.params)
-# reload the import config.params
 from config.params import (
     BOARD_SIZE,
     EPSILON_DECAY,
@@ -20,8 +15,8 @@ from config.params import (
 )
 
 from game.hex import Hex
-from neural_net.anet import ANet, load_model
-from neural_net.onix import ANet2
+from anet import ANet, load_model
+from onix import ANet2
 from tree_search import MCTS
 from utils import get_train_session_name
 
@@ -136,7 +131,7 @@ if __name__ == "__main__":
         )
         actor = Actor(
             anet=anet,
-            simulations=2500,
+            simulations=1000,
             board_size=game.board_size,
             number_of_games=1,
             save_interval=1,

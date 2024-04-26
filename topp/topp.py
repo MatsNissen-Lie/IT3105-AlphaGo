@@ -3,7 +3,7 @@ from keras.models import load_model
 import os
 import tabulate as tb
 from game.hex import Hex
-from neural_net.onix import ANet2
+from neural_net.onix import ONIX
 from utils import get_model_location
 
 
@@ -39,7 +39,7 @@ class Topp:
             # # add only 4 and 0
             # if num % 4 != 0:
             #     continue
-            onix = ANet2(model=load_model(next_location))
+            onix = ONIX(model=load_model(next_location))
             self.models.append((onix, next_location.split("/")[-1][:-3]))
             # self.model_names.append(next_location.split("/")[-1][:-3])
         self.init_scores()

@@ -174,7 +174,8 @@ if __name__ == "__main__":
     import time
     from neural_net.anet import load_model
     from game.hex import Hex
-    from neural_net.onix import ANet2
+    from neural_net.onix import ONIX
+    from neural_net.onix_evolved import ONIX
     from neural_net.anet import ANet
 
     game_size = 7
@@ -183,7 +184,7 @@ if __name__ == "__main__":
     # model = load_model("train_session0", 4, "hex", board_size=game_size)
     # anet = ANet(model)
 
-    anet = ANet2(
+    anet = ONIX(
         input_shape=game_size**2 + 1,
         output_shape=game_size**2,
     )
@@ -215,17 +216,24 @@ if __name__ == "__main__":
             ],
             [
                 "random_placement",
-                "4x4",
+                "7x7",
                 "512x256",
                 "onnx",
                 75,
             ],
             [
                 "random_placement",
-                "4x4",
+                "7x7",
                 "124x124x124",
                 "onnx",
                 57,
+            ],
+            [
+                "random_placement",
+                "7x7",
+                "124x124x124",
+                "onnx",
+                2.67,
             ],
         ]
         import tabulate

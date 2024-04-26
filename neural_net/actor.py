@@ -16,7 +16,7 @@ from config.params import (
 
 from game.hex import Hex
 from anet import ANet, load_model
-from onix import ANet2
+from onix import ONIX
 from tree_search import MCTS
 from utils import get_train_session_name
 
@@ -124,17 +124,15 @@ if __name__ == "__main__":
     test_simulation_time = True
 
     if train:
-        anet = ANet2()
+        anet = ONIX()
         actor = Actor(anet=anet)
         actor.train()
     elif test_simulation_time:
         game = Hex(7)
-        anet = ANet2(
-            input_shape=game.board_size**2 + 1, output_shape=game.board_size**2
-        )
+        anet = ONIX(input_shape=game.board_size**2 + 1, output_shape=game.board_size**2)
         actor = Actor(
             anet=anet,
-            simulations=1,
+            simulations=2500,
             board_size=game.board_size,
             number_of_games=1,
             save_interval=10,
@@ -189,18 +187,18 @@ if __name__ == "__main__":
         array_time = [
             # model name, borad size, nural net size, anet name, ms per rollout
             [
-                "model_4",
-                "4x4",
+                "random",
+                "7x7",
                 "124x124x124",
                 "onnix",
                 1030,
             ],
             [
-                "model_4",
-                "4x4",
+                "ANet2",
+                "7x7",
                 "124x124x124",
-                "onnix",
-                1130,
+                "onnix_evolved",
+                87,
             ],
         ]
         import tabulate

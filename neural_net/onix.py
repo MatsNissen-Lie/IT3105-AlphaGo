@@ -32,7 +32,7 @@ from config.enums import Activation, Optimizer
 from utils import get_model_location, get_train_session_name
 
 
-class ANet2:
+class ONIX:
     def __init__(
         self,
         activation: Activation = ACTIVATION,
@@ -52,6 +52,7 @@ class ANet2:
         self.output_shape = output_shape
         self.model: keras.models.Model = model if model else self.build_model()
         self.onix = self.build_onix()
+        self.session = self.start_session()
 
     def build_model(self) -> keras.models.Model:
         model = keras.Sequential()
@@ -85,9 +86,14 @@ class ANet2:
         )
         return onnx_model
 
+    def start_session(self):
+        onnx_session = onnxruntime.InferenceSession(self.onix.SerializeToString())
+        return onnx_session
+
     def train(self, x_train, y_train, epochs=EPOCHS):
         self.model.fit(x_train, y_train)
         self.onix = self.build_onix()
+        self.session = self.start_session()
 
     def train_batch(self, batch: List[Tuple]):
         feature_matrix = []
@@ -101,8 +107,7 @@ class ANet2:
 
     def predict(self, x: np.ndarray):
         x = x.astype(np.float32)
-        onnx_session = onnxruntime.InferenceSession(self.onix.SerializeToString())
-        return onnx_session.run(None, {"x": x})[0]
+        return self.session.run(None, {"x": x})[0]
 
     def save_model(self, train_session, game_name="hex"):
         board_size = int(sqrt(self.output_shape))
@@ -157,7 +162,7 @@ if __name__ == "__main__":
 
         print(board_rep)
         print(target)
-        anet = ANet2(
+        anet = ONIX(
             input_shape=game.board_size**2 + 1,
             output_shape=game.board_size**2,
         )

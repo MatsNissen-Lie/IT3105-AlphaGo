@@ -8,7 +8,8 @@ from math import sqrt
 import os
 from typing import List, Tuple
 import tf2onnx
-import onnx
+
+# import onnx
 import onnxruntime
 
 import numpy as np
@@ -24,7 +25,7 @@ from config.params import (
 import tensorflow as tf
 import keras
 from game.hex import Hex
-from neural_net.enums import Activation, Optimizer
+from enums import Activation, Optimizer
 import shutil
 
 from utils import get_model_location, get_train_session_name

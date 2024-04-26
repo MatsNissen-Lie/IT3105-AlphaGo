@@ -34,13 +34,13 @@ from utils import get_model_location, get_train_session_name
 class ANet:
     def __init__(
         self,
+        model: keras.models.Sequential = None,
         activation: Activation = ACTIVATION,
         optimizer: Optimizer = OPTIMIZER,
         layers: List[int] = LAYERS,
         learning_rate: float = LEARNING_RATE,
         input_shape: int = INPUT_SHAPE,
         output_shape: int = OUTPUT_SHAPE,
-        model: keras.models.Sequential = None,
     ):
         self.activation = activation
         self.optimizer = optimizer
@@ -48,13 +48,19 @@ class ANet:
         self.learning_rate = learning_rate
         self.input_shape = input_shape
         self.output_shape = output_shape
-        self.model: keras.models.Sequential = model if model else self.build_model()
+        self.model: keras.models.Sequential = (
+            model if model != None else self.build_model()
+        )
 
     def build_model(self) -> keras.models.Model:
+        print("Building model")
+
         model: keras.models.Model = Sequential()
         # Adding the input layer //TODO: maybe make this with the
         model.add(keras.layers.InputLayer(input_shape=(self.input_shape,)))
 
+        # self.activation.value
+        print(self.activation.value)
         # Adding hidden layers
         for layer_size in self.layers:
             model.add(Dense(layer_size, activation=self.activation.value))

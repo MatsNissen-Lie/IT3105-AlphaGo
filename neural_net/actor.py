@@ -121,6 +121,7 @@ class Actor:
 
 if __name__ == "__main__":
     train = True
+    train = False
     test_replaybuffer = False
     test_simulation_time = True
 
@@ -129,11 +130,14 @@ if __name__ == "__main__":
         actor = Actor(anet=anet)
         actor.train()
     elif test_simulation_time:
-        anet = ANet2()
+        game = Hex(7)
+        anet = ANet2(
+            input_shape=game.board_size**2 + 1, output_shape=game.board_size**2
+        )
         actor = Actor(
             anet=anet,
-            simulations=10,
-            board_size=4,
+            simulations=2500,
+            board_size=game.board_size,
             number_of_games=1,
             save_interval=1,
             epsilon_decay=0.1,

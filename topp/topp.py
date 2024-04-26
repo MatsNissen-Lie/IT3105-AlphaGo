@@ -63,6 +63,9 @@ class Topp:
             if verbose:
                 game.draw_state()
         winner = game.check_win()
+        if verbose:
+            # model won
+            print(f"Winner: {name1 if winner == 1 else name2}")
         if winner == 1:
             return 1
         else:
@@ -128,7 +131,6 @@ if __name__ == "__main__":
     #     ]
     # )
     tourney.load_models2(4, "train_session0")
+    tourney.play_game(tourney.models[1], tourney.models[0], verbose=True)
+    tourney.play_game(tourney.models[0], tourney.models[1], verbose=True)
     tourney.play_tournament()
-
-    tourney.play_game(tourney.models[0], tourney.models[-1], verbose=True)
-    tourney.play_game(tourney.models[-1], tourney.models[0], verbose=True)

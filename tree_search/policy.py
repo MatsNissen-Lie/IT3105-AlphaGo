@@ -157,7 +157,7 @@ class TargetPolicyTest:
                 move = random.choice(possible_moves)
             else:
                 time_start = time.time()
-                pred = self.anet.predict(curr_state.get_nn_input(), verbose=1)
+                pred = self.anet.predict(curr_state.get_nn_input())
                 # time taken in milliseconds
                 time_taken = (time.time() - time_start) * 1000
                 print(f"Time taken: {time_taken:.2f}ms")
@@ -174,15 +174,55 @@ if __name__ == "__main__":
     import time
     from neural_net.anet import load_model
     from game.hex import Hex
+    from neural_net.onix import ANet2
 
     game_size = 4
     node = Node(Hex(game_size))
 
-    anet = load_model("tournament3", 0, "hex", board_size=game_size)
+    model = load_model("train_session0", 4, "hex", board_size=game_size)
+    anet = ANet(model)
+    # anet = ANet2(model=anet)
 
     startTime = time.time()
     policy = TargetPolicyTest(anet)
     state = policy(node, 0)
-    taken_time = time.time() - startTime
-    print(f"Time taken: {taken_time:.2f}s")
+    taken_time = (time.time() - startTime) * 1000
+    print(f"–––––––––––––––––––––––––––––––––––")
+    print(f"Total time taken: {taken_time:.2f}ms")
     print(f"Winner: {state.check_win()}")
+
+    def print_reqords():
+        array_time = [
+            # model name, borad size, nural net size, anet name, ms per rollout
+            [
+                "model_4",
+                "4x4",
+                "124x124",
+                "anet",
+                287,
+            ],
+            [
+                "model_4",
+                "4x4",
+                "124x124",
+                "onnx",
+                10,
+            ],
+        ]
+        import tabulate
+
+        print(
+            tabulate.tabulate(
+                array_time,
+                headers=[
+                    "Model Name",
+                    "Board Size",
+                    "Neural Net Size",
+                    "ANet Name",
+                    "ms per rollout",
+                ],
+                tablefmt="pretty",
+            )
+        )
+
+    print_reqords()

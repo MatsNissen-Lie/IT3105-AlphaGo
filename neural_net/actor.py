@@ -85,7 +85,7 @@ class Actor:
             game = Hex(self.board_size, starting_player)
             mcts = MCTS(game, self.anet, self.simulations)
             root = mcts.get_root()
-            print(f"Game {game_number+1} started. Epsilon: {epsilon}")
+            print(f"\n\nGame {game_number+1} started. Epsilon: {epsilon}")
             # take the time of each game
 
             start_time = time.time()
@@ -99,7 +99,8 @@ class Actor:
                 game.draw_state(Y)
                 game.make_move(best_node.move_from_parent)
                 root = best_node
-                # print move probilities
+                print("\n")
+                # print
                 # mcts.draw_tree()
             time_taken = time.time() - start_time
             game.draw_state()
@@ -119,7 +120,7 @@ class Actor:
 
 if __name__ == "__main__":
     train = True
-    train = False
+    # train = False
     test_replaybuffer = False
     test_simulation_time = True
 

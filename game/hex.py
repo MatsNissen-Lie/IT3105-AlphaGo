@@ -119,14 +119,6 @@ class Hex:
         return False
 
     def draw_state(self, preds=None):
-        board = self.board
-        column_names = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        rows, cols, indent = len(board), len(board[0]), 0
-        headings = " " * 5 + (" " * 3).join(column_names[:cols])
-        tops = " " * 5 + (" " * 3).join("-" * cols)
-        roof = " " * 4 + "/ \\" + "_/ \\" * (cols - 1)
-        print(headings), print(tops), print(roof)
-
         def color_mapping(cell_value, index=None):
             if int(cell_value) == 1:
                 cell_display = f"{Back.BLUE}{Fore.WHITE} {Style.RESET_ALL}"
@@ -139,6 +131,16 @@ class Hex:
                 else:
                     cell_display = " "
             return cell_display
+
+        if preds is not None:
+            print(f"Player to move: {color_mapping(self.player_turn, 0)}")
+        board = self.board
+        column_names = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        rows, cols, indent = len(board), len(board[0]), 0
+        headings = " " * 5 + (" " * 3).join(column_names[:cols])
+        tops = " " * 5 + (" " * 3).join("-" * cols)
+        roof = " " * 4 + "/ \\" + "_/ \\" * (cols - 1)
+        print(headings), print(tops), print(roof)
 
         for r in range(rows):
             row_mid = " " * indent
@@ -159,11 +161,6 @@ class Hex:
             indent += 2
         headings = " " * (indent - 2) + headings
         print(headings)
-
-        if preds is not None:
-            print(
-                f"Player to move: {self.player_turn} {color_mapping(self.player_turn, 0)}"
-            )
 
     def move_to_str(self, move):
         if move == None:

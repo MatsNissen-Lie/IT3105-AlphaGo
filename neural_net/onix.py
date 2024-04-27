@@ -81,9 +81,7 @@ class ONIX:
         input_signature = [
             tf.TensorSpec(
                 self.model.inputs[0].shape,
-                # i want the type to be float8
-                # keras.Input(shape=(self.input_shape), dtype="float16").dtype,
-                dtype="float32",
+                dtype="float16",
                 name="x",
             )
         ]
@@ -97,7 +95,7 @@ class ONIX:
         return onnx_session
 
     def train(self, x_train, y_train, epochs=EPOCHS):
-        self.model.fit(x_train, y_train)
+        self.model.fit(x_train, y_train, epochs=epochs)
         self.onix = self.build_onix()
         self.session = self.start_session()
 
@@ -112,7 +110,7 @@ class ONIX:
         self.train(feature_matrix, probability_distribution)
 
     def predict(self, x: np.ndarray):
-        x = x.astype(np.float32)
+        x = x.astype(np.float16)
         return self.session.run(None, {"x": x})[0]
 
     def save_model(self, train_session, game_name="hex"):

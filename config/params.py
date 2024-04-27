@@ -19,7 +19,7 @@ LAYERS = [124, 124, 124]
 ACTIVATION = Activation.RELU
 OPTIMIZER = Optimizer.ADAM
 LEARNING_RATE = 1e-3
-EPOCHS = 5
+EPOCHS = 1
 """
 configuration of the MCTS
 """

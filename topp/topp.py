@@ -29,7 +29,7 @@ class Topp:
         self.models.append((onix, f"{new_name}"))
         self.scores_lists.append([0, 0, 0])
 
-    def load_models(self, board_size, folder, max=None):
+    def load_models(self, board_size, folder, max=None, identifier=""):
         next_location = get_model_location(board_size, folder)[0]
         num = int(next_location.split("/")[-1].split("_")[-1].split(".")[0])
 
@@ -39,7 +39,9 @@ class Topp:
             if max is not None and len(self.models) == max:
                 break
             onix = ONIX(model=load_model(next_location))
-            self.models.append((onix, next_location.split("/")[-1][:-3]))
+            # add the identifier to the model name start
+            name = f"{identifier}" + next_location.split("/")[-1][:-3]
+            self.models.append((onix, name))
             # self.model_names.append(next_location.split("/")[-1][:-3])
         self.init_scores()
 
@@ -104,6 +106,7 @@ class Topp:
         results_to_print = [
             [name] + stats for stats, name in zip(self.scores_lists, model_names)
         ]
+        results_to_print.sort(key=lambda x: x[1], reverse=True)
         print(
             tb.tabulate(
                 results_to_print,
@@ -120,9 +123,26 @@ class Topp:
 
 if __name__ == "__main__":
     tourney = Topp(4)
-    tourney.load_models(7, "train_session1", max=4)
-    tourney.load_model(7, "train_session2", 1, "20games")
-    tourney.play_game(tourney.models[1], tourney.models[-1], verbose=True)
-    tourney.play_game(tourney.models[-1], tourney.models[1], verbose=True)
+    tourney.load_models(7, "train_session2_noswitch", identifier="noswitch_")
 
     tourney.play_tournament()
+    old_models = tourney.models
+    tourney.models = []
+    tourney.load_models(7, "train_session3_switch", identifier="switch_")
+    tourney.play_tournament()
+
+    # paly all models against each other
+    tourney.models = old_models + tourney.models
+    tourney.init_scores()
+
+    # load
+    tourney.load_models(7, "train_session1", identifier="heavy")
+
+    tourney.play_tournament()
+
+    # konklusjon. er at det ikke har så mye å si man bytter på hvem som starter
+
+    # tourney.load_model(7, "train_session2", 1, "20games")
+    # tourney.load_model(7, "train_session1", 3, "model_3")
+    # tourney.play_game(tourney.models[0], tourney.models[-1], verbose=True)
+    # tourney.play_game(tourney.models[-1], tourney.models[0], verbose=True)

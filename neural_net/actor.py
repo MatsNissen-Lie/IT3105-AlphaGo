@@ -76,12 +76,13 @@ class Actor:
 
     def train(self):
         # how many games
+        total_time = time.time()
         print(f"Number of games: {self.number_of_games}")
         train_session = get_train_session_name(self.board_size)
         for game_number in range(self.number_of_games):
             # for the first iteration epsoilon is 1. No neural network is used. After the first iteration, the epsilon is decayed.
             epsilon = self.epsiolon_decay(game_number)
-            starting_player = 1  # 1 if game_number % 2 == 0 else 2
+            starting_player = 1 if game_number % 2 == 0 else 2
             game = Hex(self.board_size, starting_player)
             mcts = MCTS(game, self.anet, self.simulations)
             root = mcts.get_root()
@@ -107,7 +108,7 @@ class Actor:
             print(f"Game {game_number+1} finished. Winner: {game.check_win()}")
             print(f"Starting player: {starting_player}")
             print(
-                f"Time taken: {time_taken//60:.0f}m {time_taken%60:.0f}s and {(time_taken%60*1000%1000):.2f}ms"
+                f"Time taken: {time_taken//60:.0f}m {time_taken%60:.0f}s and {(time_taken%60*1000%1000):0f}ms"
             )
             # print(f"Total time taken: {time_taken*1000:.2f}ms")
 
@@ -116,6 +117,9 @@ class Actor:
 
             if (game_number + 1) % self.save_interval == 0:
                 self.anet.save_model(train_session=train_session)
+        total_time = time.time() - total_time
+        # houres and minutes
+        print(f"Total time taken: {total_time//3600:.0f}h {total_time//60:.0f}m")
 
 
 if __name__ == "__main__":

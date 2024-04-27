@@ -126,7 +126,7 @@ class Hex:
                 cell_display = f"{Back.RED}{Fore.WHITE} {Style.RESET_ALL}"
             else:
                 if preds is not None and index is not None:
-                    prediction = int(preds[index] * 10)
+                    prediction = int(round(preds[index] * 10))
                     cell_display = f"{prediction}"
                 else:
                     cell_display = " "

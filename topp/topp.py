@@ -1,3 +1,4 @@
+from math import sqrt
 import numpy as np
 from keras.models import load_model
 import os
@@ -34,8 +35,8 @@ class Topp:
         while num != 0:
             num = num - 1
             next_location = next_location.replace(f"model_{num + 1}", f"model_{num}")
-            # if max is not None and len(self.models) == max:
-            #     break
+            if max is not None and len(self.models) == max:
+                break
             # # add only 4 and 0
             # if num % 4 != 0:
             #     continue
@@ -49,7 +50,8 @@ class Topp:
         model2, name2 = model2
         if verbose:
             print(f"Playing game between {name1} and {name2}")
-        game = Hex(4)
+        assert model1.output_shape == model2.output_shape
+        game = Hex(int(sqrt(model1.output_shape)))
         while not game.is_terminal():
             if game.player_turn == 1:
                 state = game.get_nn_input()
@@ -61,7 +63,8 @@ class Topp:
                 move = game.get_move_from_nn_output(pred)
             game.make_move(move)
             if verbose:
-                game.draw_state()
+                game.draw_state(pred[0])
+                print(pred[0])
         winner = game.check_win()
         if verbose:
             # model won
@@ -120,17 +123,7 @@ class Topp:
 
 if __name__ == "__main__":
     tourney = Topp(4)
-    # tourney.load_models(
-    #     [
-    #         "/hex/4x4/2024-04-24/model_0.h5",
-    #         "/hex/4x4/2024-04-24/model_1.h5",
-    #         "/hex/4x4/2024-04-24/model_2.h5",
-    #         "/hex/4x4/2024-04-24/model_3.h5",
-    #         "/hex/4x4/2024-04-24/model_4.h5",
-    #         "/hex/4x4/2024-04-24/model_5.h5",
-    #     ]
-    # )
-    tourney.load_models2(4, "train_session0")
-    tourney.play_game(tourney.models[1], tourney.models[0], verbose=True)
-    tourney.play_game(tourney.models[0], tourney.models[1], verbose=True)
+    tourney.load_models2(7, "train_session1")
+    tourney.play_game(tourney.models[1], tourney.models[-1], verbose=True)
+    tourney.play_game(tourney.models[-1], tourney.models[1], verbose=True)
     tourney.play_tournament()

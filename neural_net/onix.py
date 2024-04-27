@@ -46,10 +46,12 @@ class ONIX:
         self.activation = activation
         self.optimizer = optimizer
         self.layers = layers
-        print(f"Layers: {layers}")
         self.learning_rate = learning_rate
         self.input_shape = input_shape
         self.output_shape = output_shape
+        if model:
+            self.input_shape = model.input_shape[1]
+            self.output_shape = model.output_shape[1]
         self.model: keras.models.Model = model if model else self.build_model()
         self.onix = self.build_onix()
         self.session = self.start_session()
@@ -78,7 +80,11 @@ class ONIX:
     def build_onix(self):
         input_signature = [
             tf.TensorSpec(
-                self.model.inputs[0].shape, self.model.inputs[0].dtype, name="x"
+                self.model.inputs[0].shape,
+                # i want the type to be float8
+                # keras.Input(shape=(self.input_shape), dtype="float16").dtype,
+                dtype="float32",
+                name="x",
             )
         ]
         onnx_model, _ = tf2onnx.convert.from_keras(

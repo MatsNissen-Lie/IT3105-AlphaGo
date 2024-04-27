@@ -1,6 +1,7 @@
 from math import sqrt
 import numpy as np
 from keras.models import load_model
+from neural_net.onix import load_model as load_model_onix
 import os
 import tabulate as tb
 from game.hex import Hex
@@ -23,12 +24,12 @@ class Topp:
         # col 1 score col 2 games_started
         self.scores_lists = [[0, 0, 0] for _ in range(len(self.models))]
 
-    def load_models(self, models):
-        for model_name in models:
-            model = load_model(self.model_path + model_name)
-            self.models.append(model)
+    def load_model(self, board_size, folder, num, new_name):
+        onix = ONIX(model=load_model_onix(folder, num, "hex", board_size))
+        self.models.append((onix, f"{new_name}"))
+        self.scores_lists.append([0, 0, 0])
 
-    def load_models2(self, board_size, folder, max=None):
+    def load_models(self, board_size, folder, max=None):
         next_location = get_model_location(board_size, folder)[0]
         num = int(next_location.split("/")[-1].split("_")[-1].split(".")[0])
 
@@ -37,9 +38,6 @@ class Topp:
             next_location = next_location.replace(f"model_{num + 1}", f"model_{num}")
             if max is not None and len(self.models) == max:
                 break
-            # # add only 4 and 0
-            # if num % 4 != 0:
-            #     continue
             onix = ONIX(model=load_model(next_location))
             self.models.append((onix, next_location.split("/")[-1][:-3]))
             # self.model_names.append(next_location.split("/")[-1][:-3])
@@ -64,7 +62,6 @@ class Topp:
             game.make_move(move)
             if verbose:
                 game.draw_state(pred[0])
-                print(pred[0])
         winner = game.check_win()
         if verbose:
             # model won
@@ -123,7 +120,9 @@ class Topp:
 
 if __name__ == "__main__":
     tourney = Topp(4)
-    tourney.load_models2(7, "train_session1")
+    tourney.load_models(7, "train_session1", max=4)
+    tourney.load_model(7, "train_session2", 1, "20games")
     tourney.play_game(tourney.models[1], tourney.models[-1], verbose=True)
     tourney.play_game(tourney.models[-1], tourney.models[1], verbose=True)
+
     tourney.play_tournament()

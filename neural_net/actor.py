@@ -81,7 +81,7 @@ class Actor:
         for game_number in range(self.number_of_games):
             # for the first iteration epsoilon is 1. No neural network is used. After the first iteration, the epsilon is decayed.
             epsilon = self.epsiolon_decay(game_number)
-            starting_player = 1 if game_number % 2 == 0 else 2
+            starting_player = 1  # 1 if game_number % 2 == 0 else 2
             game = Hex(self.board_size, starting_player)
             mcts = MCTS(game, self.anet, self.simulations)
             root = mcts.get_root()
@@ -199,7 +199,7 @@ if __name__ == "__main__":
                 "7x7",
                 "124x124x124",
                 "onnix_evolved",
-                87,
+                84,
             ],
         ]
         import tabulate

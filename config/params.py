@@ -19,7 +19,7 @@ LAYERS = [124, 124, 124]
 ACTIVATION = Activation.RELU
 OPTIMIZER = Optimizer.ADAM
 LEARNING_RATE = 1e-3
-EPOCHS = 100
+EPOCHS = 5
 """
 configuration of the MCTS
 """
@@ -30,7 +30,7 @@ This file contains the configuration for the reinforcement learning algorithm.
 """
 REPLAY_BUFFER_SIZE = 2048
 REPLAY_BATCH_SIZE = 256
-NUMBER_OF_GAMES = 500
+NUMBER_OF_GAMES = 50
 # SIMULATIONS = 100
 SIMULATIONS = 2500
 # IDENTIFIER = "model"

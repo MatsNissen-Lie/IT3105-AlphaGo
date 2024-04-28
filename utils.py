@@ -7,7 +7,6 @@ def get_train_session_name(board_size, game_name="hex", num=0):
         f"./models/{game_name}/{board_size}x{board_size}/train_session{num}"
     )
     location = os.path.join(os.path.dirname(__file__), location_from_root)
-    print(location)
     while os.path.exists(location):
         num += 1
         location = location.replace(f"train_session{num-1}", f"train_session{num}")

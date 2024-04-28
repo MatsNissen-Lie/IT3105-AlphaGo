@@ -137,7 +137,7 @@ if __name__ == "__main__":
         anet = ONIX(input_shape=game.board_size**2 + 1, output_shape=game.board_size**2)
         actor = Actor(
             anet=anet,
-            simulations=2500,
+            simulations=3000,
             board_size=game.board_size,
             number_of_games=1,
             save_interval=10,

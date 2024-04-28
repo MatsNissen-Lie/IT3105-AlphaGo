@@ -268,6 +268,21 @@ class Hex:
             self.make_move((6, 6))
             self.make_move((6, 1))
 
+    def get_move_from_preds(self, preds):
+        # find index of max value
+        # filter out invalid moves
+        sorted_preds = np.argsort(preds)
+        max_index = None
+        for i in range(len(sorted_preds) - 1, -1, -1):
+            row = sorted_preds[i] // self.board_size
+            col = sorted_preds[i] % self.board_size
+            if self.isAvailable_move(row, col):
+                max_index = sorted_preds[i]
+                break
+        row = max_index // self.board_size
+        col = max_index % self.board_size
+        return (row, col)
+
 
 # Uncomment to test the game setup
 if __name__ == "__main__":

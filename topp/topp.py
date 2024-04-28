@@ -39,8 +39,9 @@ class Topp:
             if max is not None and len(self.models) == max:
                 break
             onix = ONIX(model=load_model(next_location))
-            # add the identifier to the model name start
-            name = f"{identifier}" + next_location.split("/")[-1][:-3]
+            name = next_location.split("/")[-1][:-3]
+            # replace model with identifier
+            name = name.replace("model", identifier)
             self.models.append((onix, name))
             # self.model_names.append(next_location.split("/")[-1][:-3])
         self.init_scores()
@@ -123,20 +124,21 @@ class Topp:
 
 if __name__ == "__main__":
     tourney = Topp(4)
-    tourney.load_models(7, "train_session2_noswitch", identifier="noswitch_")
+    # tourney.load_models(7, "train_session2_noswitch", identifier="noswitch_")
 
-    tourney.play_tournament()
-    old_models = tourney.models
-    tourney.models = []
-    tourney.load_models(7, "train_session3_switch", identifier="switch_")
-    tourney.play_tournament()
+    # tourney.play_tournament()
+    # old_models = tourney.models
+    # tourney.models = []
+    # tourney.load_models(7, "train_session3_switch", identifier="switch_")
+    # tourney.play_tournament()
 
-    # paly all models against each other
-    tourney.models = old_models + tourney.models
-    tourney.init_scores()
+    # # paly all models against each other
+    # tourney.models = old_models + tourney.models
+    # tourney.init_scores()
 
-    # load
+    # # load
     tourney.load_models(7, "train_session1", identifier="heavy")
+    tourney.load_models(7, "train_session2", max=10, identifier="boobs")
 
     tourney.play_tournament()
 

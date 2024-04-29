@@ -10,7 +10,7 @@ class Node:
         self.children: List["Node"] = []
         self.value = 0  # Value from critic
         self.visits = 0
-        self.c = 1  # Exploration parameter
+        self.c = 1.4  # Exploration parameter
 
         self.move_from_parent = move  # info only for drawing the tree
 

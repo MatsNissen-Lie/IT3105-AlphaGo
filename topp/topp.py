@@ -32,13 +32,13 @@ class Topp:
     def load_models(self, board_size, folder, max=None, identifier=""):
         next_location = get_model_location(board_size, folder)[0]
         num = int(next_location.split("/")[-1].split("_")[-1].split(".")[0])
-
+        loaded = 0
         while num != 0:
+            if max is not None and loaded == max:
+                break
             num = num - 1
             next_location = next_location.replace(f"model_{num + 1}", f"model_{num}")
-            if max is not None and len(self.models) == max:
-                break
-            onix = ONIX(model=load_model(next_location))
+            onix, loaded = ONIX(model=load_model(next_location)), loaded + 1
             name = next_location.split("/")[-1][:-3]
             # replace model with identifier
             name = name.replace("model", identifier)
@@ -137,8 +137,10 @@ if __name__ == "__main__":
     # tourney.init_scores()
 
     # # load
-    tourney.load_models(7, "train_session1", identifier="heavy")
+    tourney.load_models(7, "train_session1", identifier="OG")
     tourney.load_models(7, "train_session2", max=10, identifier="boobs")
+    tourney.load_models(7, "train_session3", max=10, identifier="killah")
+    tourney.load_models(7, "mmv", max=10, identifier="mmv")
 
     tourney.play_tournament()
 

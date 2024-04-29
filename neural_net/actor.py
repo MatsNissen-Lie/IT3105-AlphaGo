@@ -15,8 +15,8 @@ from config.params import (
 )
 
 from game.hex import Hex
-from anet import ANet, load_model
-from onix import ONIX
+from neural_net.anet import ANet, load_model
+from neural_net.onix import ONIX
 from tree_search import MCTS
 from utils import get_train_session_name
 
@@ -47,7 +47,7 @@ class ReplayBuffer:
 class Actor:
     def __init__(
         self,
-        anet: any,
+        anet: ONIX = ONIX(),
         replay_buffer: ReplayBuffer = ReplayBuffer(REPLAY_BUFFER_SIZE),
         board_size: int = BOARD_SIZE,
         simulations: int = SIMULATIONS,
@@ -120,6 +120,19 @@ class Actor:
         total_time = time.time() - total_time
         # houres and minutes
         print(f"Total time taken: {total_time//3600:.0f}h {total_time//60:.0f}m")
+
+    def play(self, myPlayer: int = 1):
+        game = Hex(self.board_size)
+        while not game.is_terminal():
+            if game.get_player() == myPlayer:
+                game.draw_state()
+                move = game.get_move_from_str(input("Enter move: "))
+            else:
+                pred = self.anet.predict(game.get_nn_input())
+                move = game.get_move_from_nn_output(pred)
+            game.make_move(move)
+        game.draw_state()
+        print(f"Winner: {game.check_win()}")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+import keras
 
 
 def get_train_session_name(board_size, game_name="hex", num=0):
@@ -26,6 +27,12 @@ def get_model_location(board_size, train_session, game_name="hex"):
 
     param_location = location[: location.rfind("/")] + "/params.py"
     return location, param_location
+
+
+def load_kreas_model(folder, num, game_name="hex", board_size=7):
+    path = f"models/{game_name}/{board_size}x{board_size}/{folder}/model_{num}.h5"
+    path = os.path.join(os.path.dirname(__file__), path)
+    return keras.models.load_model(path)
 
 
 if __name__ == "__main__":

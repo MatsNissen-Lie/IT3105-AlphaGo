@@ -35,13 +35,13 @@ from utils import get_model_location, get_train_session_name
 class ONIX:
     def __init__(
         self,
+        model: keras.models.Sequential = None,
         activation: Activation = ACTIVATION,
         optimizer: Optimizer = OPTIMIZER,
         layers: List[int] = LAYERS,
         learning_rate: float = LEARNING_RATE,
         input_shape: int = INPUT_SHAPE,
         output_shape: int = OUTPUT_SHAPE,
-        model: keras.models.Sequential = None,
     ):
         self.activation = activation
         self.optimizer = optimizer

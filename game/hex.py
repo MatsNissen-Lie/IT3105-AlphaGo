@@ -174,6 +174,15 @@ class Hex:
             return "Pass"
         return f"{chr(move[1] + 65)}{move[0] + 1}"
 
+    def get_move_from_str(self, move_str: str):
+        if move_str.lower() == "pass" or move_str.lower() == "":
+            return None
+        col = ord(move_str[0].upper()) - 65
+        row = int(move_str[1:]) - 1
+        if not self.is_valid_move(row, col):
+            return None
+        return row, col
+
     def transform_state_for_nn(self):
         return np.where(self.board == 1, 1, np.where(self.board == 2, -1, 0))
 

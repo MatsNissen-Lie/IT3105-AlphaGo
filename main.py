@@ -1,6 +1,9 @@
 import argparse
 from neural_net.actor import Actor
-from neural_net.anet import ANet
+
+from neural_net.onix import ONIX
+from topp.topp import Topp
+from utils import get_model_location, load_kreas_model
 
 
 def main(args):
@@ -18,17 +21,22 @@ def main(args):
         pass
 
     if args.tournament:
-        # Run a tournament
-        pass
+        tourney = Topp(4, switch_starting_player=True, verbose=False)
+        tourney.load_models(7, "train_session2", max=10, identifier="boobs")
+        tourney.load_models(7, "train_session3", max=10, identifier="killah")
+        tourney.load_models(7, "mmv", max=10, identifier="mmv")
+        tourney.play_tournament()
 
     if args.train:
-        model = ANet()
+        model = ONIX()
         actor = Actor(model)
         actor.train()
 
     if args.play:
-        # Play against the neural network model
-        pass
+        kreas_model = load_kreas_model("train_session3", 18, "hex", 7)
+        model = ONIX(kreas_model)
+        actor = Actor(model)
+        actor.play()
 
 
 def parse_args():

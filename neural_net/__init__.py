@@ -1,3 +1,3 @@
-# from .enums import Optimizer, Activation
-# from .actor import Actor, ReplayBuffer
-# from .onix import ONIX
+from .actor import Actor, ReplayBuffer
+from .onix import ONIX
+from .anet import ANet

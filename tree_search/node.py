@@ -1,4 +1,5 @@
 import numpy as np
+from config.params import EXPLORATION_CONSTANT
 from game.game_interface import GameInterface
 from typing import List
 
@@ -10,7 +11,7 @@ class Node:
         self.children: List["Node"] = []
         self.value = 0  # Value from critic
         self.visits = 0
-        self.c = 1.4  # Exploration parameter
+        self.c = EXPLORATION_CONSTANT
 
         self.move_from_parent = move  # info only for drawing the tree
 

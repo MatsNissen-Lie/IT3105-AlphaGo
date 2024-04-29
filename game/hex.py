@@ -118,12 +118,19 @@ class Hex:
 
         return False
 
+    def get_palyer_color(self, cell_value):
+        if int(cell_value) == 1:
+            cell_display = f"{Back.BLUE} {Style.RESET_ALL}"
+        elif int(cell_value) == 2:
+            cell_display = f"{Back.RED} {Style.RESET_ALL}"
+        else:
+            cell_display = " "
+        return cell_display
+
     def draw_state(self, preds=None):
         def color_mapping(cell_value, index=None):
-            if int(cell_value) == 1:
-                cell_display = f"{Back.BLUE}{Fore.WHITE} {Style.RESET_ALL}"
-            elif int(cell_value) == 2:
-                cell_display = f"{Back.RED}{Fore.WHITE} {Style.RESET_ALL}"
+            if int(cell_value) == 1 or int(cell_value) == 2:
+                cell_display = self.get_palyer_color(cell_value)
             else:
                 if preds is not None and index is not None:
                     prediction = int(round(preds[index] * 10))

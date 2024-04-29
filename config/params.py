@@ -23,6 +23,7 @@ EPOCHS = 1
 configuration of the MCTS
 """
 TIME_LIMIT = 2
+EXPLORATION_CONSTANT = 1
 
 """
 This file contains the configuration for the reinforcement learning algorithm.

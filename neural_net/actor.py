@@ -108,7 +108,7 @@ class Actor:
             print(f"Game {game_number+1} finished. Winner: {game.check_win()}")
             print(f"Starting player: {starting_player}")
             print(
-                f"Time taken: {time_taken//60:.0f}m {time_taken%60:.0f}s and {(time_taken%60*1000%1000):0f}ms"
+                f"Time taken: {time_taken//60:.0f}m {time_taken%60:.0f}s and {np.round((time_taken%60*1000%1000))}ms"
             )
             # print(f"Total time taken: {time_taken*1000:.2f}ms")
 

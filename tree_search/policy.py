@@ -175,11 +175,10 @@ if __name__ == "__main__":
     from neural_net.anet import load_model
     from game.hex import Hex
     from neural_net.onix import ONIX
-    from neural_net.onix_evolved import ONIX
     from neural_net.anet import ANet
 
     game_size = 7
-    node = Node(Hex(game_size))
+    node = Node(Hex(game_size, 1, True))
 
     # model = load_model("train_session0", 4, "hex", board_size=game_size)
     # anet = ANet(model)

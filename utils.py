@@ -3,15 +3,17 @@ import os
 import keras
 
 
-def get_train_session_name(board_size, game_name="hex", num=0):
+def get_train_session_name(
+    board_size, defaultName="train_session", game_name="hex", num=0
+):
     location_from_root = (
-        f"./models/{game_name}/{board_size}x{board_size}/train_session{num}"
+        f"./models/{game_name}/{board_size}x{board_size}/{defaultName}{num}"
     )
     location = os.path.join(os.path.dirname(__file__), location_from_root)
     while os.path.exists(location):
         num += 1
-        location = location.replace(f"train_session{num-1}", f"train_session{num}")
-    return f"train_session{num}"
+        location = location.replace(f"{defaultName}{num-1}", f"{defaultName}{num}")
+    return f"{defaultName}{num}"
 
 
 def get_model_location(board_size, train_session, game_name="hex"):
@@ -27,6 +29,17 @@ def get_model_location(board_size, train_session, game_name="hex"):
 
     param_location = location[: location.rfind("/")] + "/params.py"
     return location, param_location
+
+
+def get_buffer_location(board_size, train_session, game_name="hex"):
+    num = 0
+    location_from_root = f"./models/{game_name}/{board_size}x{board_size}/{train_session}/buffer_{num}.pkl"
+    location = os.path.join(os.path.dirname(__file__), location_from_root)
+
+    while os.path.exists(location):
+        num += 1
+        location = location.replace(f"buffer_{num-1}", f"buffer_{num}")
+    return location
 
 
 def load_kreas_model(folder, num, game_name="hex", board_size=7):

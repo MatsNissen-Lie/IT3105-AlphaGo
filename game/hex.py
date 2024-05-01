@@ -7,7 +7,7 @@ from colorama import Back, Style, Fore
 
 
 class Hex:
-    def __init__(self, board_size=7, starting_player=1):
+    def __init__(self, board_size=7, starting_player=1, rotate_palyer2_for_nn=False):
 
         if not 3 <= board_size <= 10:
             raise ValueError("Board size must be between 3 and 10")
@@ -15,6 +15,9 @@ class Hex:
         self.board = np.zeros((board_size, board_size))
         self.player_turn = starting_player
         self.action = None
+
+        # roateting the board for player 2 makes player 2 and player 1 have the same perspective and objective. Perhaps this makes learning easier for the neural network.
+        self.rotate_palyer2_for_nn = rotate_palyer2_for_nn
 
     def get_player(self):
         return self.player_turn
@@ -128,6 +131,9 @@ class Hex:
         return cell_display
 
     def draw_state(self, preds=None):
+        if preds is not None and self.rotate_palyer2_for_nn and self.player_turn == 2:
+            preds = self.rotate_for_nn(preds)
+
         def color_mapping(cell_value, index=None):
             if int(cell_value) == 1 or int(cell_value) == 2:
                 cell_display = self.get_palyer_color(cell_value)
@@ -183,11 +189,18 @@ class Hex:
             return None
         return row, col
 
-    def transform_state_for_nn(self):
-        return np.where(self.board == 1, 1, np.where(self.board == 2, -1, 0))
+    def transform_state_for_nn(self, board=None):
+        if board is None:
+            board = self.board
+        return np.where(board == 1, 1, np.where(board == 2, -1, 0)).flatten()
 
     def get_nn_input(self, isForReplayBuffer=False):
-        flat_board = self.transform_state_for_nn().flatten()
+        new_board = (
+            self.rotate_board(self.board)
+            if self.player_turn == 2 and self.rotate_palyer2_for_nn
+            else self.board
+        )
+        flat_board = self.transform_state_for_nn(new_board)
         format_player = 1 if self.player_turn == 1 else -1
         nn_input = np.append(flat_board, format_player)
         nn_input = np.array(nn_input, dtype=np.float64)
@@ -195,7 +208,6 @@ class Hex:
             return nn_input
         return np.expand_dims(nn_input, axis=0)
 
-    # make a clone of the board
     def clone(self):
         clone = copy.deepcopy(self)
         return clone
@@ -219,30 +231,14 @@ class Hex:
             visit_counts[index] = visits
         total_visit_count = max(1, sum(visit_counts))
         distribution = np.array([count / total_visit_count for count in visit_counts])
+
+        if self.player_turn == 2 and self.rotate_palyer2_for_nn:
+            distribution = self.rotate_for_nn(distribution)
         return distribution
 
-    def transform_nn_target_to_moves(
-        self, nn_output: np.ndarray
-    ) -> List[Tuple[Tuple[int, int], int]]:
-        """Transform the output of the neural network into a list of moves and their visit counts.
-
-        Args:
-            nn_output (np.ndarray): The output of the neural network.
-
-        Returns:
-            List[Tuple[Tuple[int, int], int]]: A list of moves and their visit counts.
-        """
-        move_visits = []
-        for i, probibility in enumerate(nn_output):
-            row = i // self.board_size
-            col = i % self.board_size
-            move = (row, col)
-            move_visits.append((move, probibility))
-        return move_visits
-
-    # nn_output is a 2d array of size 1x49
     def get_move_from_nn_output(self, nn_output: np.ndarray) -> Tuple[int, int]:
-        """Get the move with the highest visit count from the output of the neural network.
+        """
+        Get the move with the highest visit count from the output of the neural network.
 
         Args:
             nn_output (np.ndarray): The output of the neural network.
@@ -250,11 +246,14 @@ class Hex:
         Returns:
             Tuple[int, int]: The move with the highest visit count.
         """
-
+        nn_output = nn_output[0]
+        # make a 2d array like the board of the nn_output
+        if self.player_turn == 2 and self.rotate_palyer2_for_nn:
+            nn_output = self.rotate_for_nn(nn_output)
         # get max valid move
         best_move = None
         max_prob = 0
-        for i, prob in enumerate(nn_output[0]):
+        for i, prob in enumerate(nn_output):
             row = i // self.board_size
             col = i % self.board_size
             if self.isAvailable_move(row, col) and prob > max_prob:
@@ -284,53 +283,62 @@ class Hex:
             self.make_move((6, 6))
             self.make_move((6, 1))
 
-    def get_move_from_preds(self, preds):
-        # find index of max value
-        # filter out invalid moves
-        sorted_preds = np.argsort(preds)
-        max_index = None
-        for i in range(len(sorted_preds) - 1, -1, -1):
-            row = sorted_preds[i] // self.board_size
-            col = sorted_preds[i] % self.board_size
-            if self.isAvailable_move(row, col):
-                max_index = sorted_preds[i]
-                break
-        row = max_index // self.board_size
-        col = max_index % self.board_size
-        return (row, col)
+    def reset(self, starting_player=1):
+        self.board = np.zeros((self.board_size, self.board_size))
+        self.player_turn = starting_player
+        self.action = None
+
+    def rotate_board(self, board):
+        old_borad = np.asarray(board)
+        new_board = np.zeros((self.board_size, self.board_size))
+        for row in range(self.board_size):
+            for col in range(self.board_size):
+                new_board[col][row] = old_borad[row][col]
+        return new_board
+
+    def rotate_for_nn(self, nn_output):
+        nn_output = nn_output.reshape(self.board_size, self.board_size)
+        nn_output = self.rotate_board(nn_output)
+        return nn_output.flatten()
 
 
 # Uncomment to test the game setup
 if __name__ == "__main__":
-    game = Hex()
+    game = Hex(7, rotate_palyer2_for_nn=True)
     if False:
-        game.make_move((0, 0))  # Player 1
-        game.make_move((0, 1))  # Player 2
-        game.make_move((1, 0))  # Player 1
-        game.make_move((0, 2))  # Player 2
-        game.make_move((2, 0))  # Player 1
-        game.make_move((0, 3))  # Player 2
-        game.make_move((3, 0))  # Player 1
-        game.make_move((0, 4))  # Player 2
-        game.make_move((4, 0))  # Player 1
-        game.make_move((0, 5))  # Player 2
-        game.make_move((5, 0))  # Player 1
-        game.make_move((0, 6))  # Player 2
-        # Player 1, this should create a winning path from top to bottom
-        game.make_move((6, 0))
-        game.draw_state()
-        winner = game.check_win()
-        print("Winner:", winner)
+        True
     else:
-
         game.go_to_end_game()
-        game.draw_state()
-        # make preds
+        np.random.seed(2)
         preds = np.random.rand(49)
-        game.draw_state(preds)
-        print(game.check_win())
-        print(game.get_player_turn())
-        # print(game.get_nn_input())
-        # Fore color
-        print(f"{Fore.RED}Hello World {Fore.RESET}Hello World")
-        # print(game.get_nn_input_advanced())
+        preds2 = game.rotate_for_nn(preds)
+
+        # print preds as 7x7 matrix
+        print(preds.reshape(7, 7))
+
+        game.draw_state(preds=preds)
+        move = game.get_move_from_nn_output([preds])
+        game.make_move(move)
+
+        # revert move
+        assert game.player_turn == 2
+        game.board[move[0]][move[1]] = 0
+        game.draw_state()
+        move2 = game.get_move_from_nn_output([preds2])
+
+        # denne burde ikke være lik?
+        assert move == move2
+
+        print("######################")
+
+        # game.make_move((6, 4))
+        # game.board = game.rotate_board()
+        # game.draw_state(preds=preds2)
+        # game.draw_state()
+        # make preds
+
+        # game.board = game.rotate_board()
+
+        # move = game.get_move_from_nn_output([preds])
+        # game.make_move(move)
+        # game.draw_state()

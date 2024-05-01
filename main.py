@@ -1,4 +1,6 @@
 import argparse
+from config.params import BOARD_SIZE, UNIFORM_PALYER
+from game.hex import Hex
 from neural_net.actor import Actor
 
 from neural_net.onix import ONIX
@@ -21,15 +23,30 @@ def main(args):
         pass
 
     if args.tournament:
-        tourney = Topp(4, switch_starting_player=True, verbose=False)
-        tourney.load_models(7, "train_session2", max=10, identifier="boobs")
-        tourney.load_models(7, "train_session3", max=10, identifier="killah")
-        tourney.load_models(7, "mmv", max=10, identifier="mmv")
+        tourney = Topp(8, switch_starting_player=True, verbose=False)
+        # tourney.load_models(7, "train_session2", max=10, identifier="boobs")
+        # tourney.load_models(7, "mmv", max=5, identifier="mmv")
+        # tourney.load_models(7, "train_session3", max=5, identifier="explore")
+        # tourney.load_models(7, "train_session4", max=5, identifier="xp")
+
+        # tourney.load_model(7, "train_session2", 1, "20games")
+        # tourney.load_model(7, "train_session1", 3, "model_3")
+
+        # tourney.load_models(7, "rotate0", max=5, identifier="rotated")
+        # tourney.load_models(7, "not_rotated0", max=5, identifier="normal")
+
+        # load two models and play them against each other
+        tourney.load_model(7, "rotate0", 4, "50rotate")
+        tourney.load_model(7, "rotate0", 3, "40rotate")
+        tourney.play_game(tourney.models[0], tourney.models[-1], verbose=True)
+        tourney.play_game(tourney.models[-1], tourney.models[0], verbose=True)
+
         tourney.play_tournament()
 
     if args.train:
         model = ONIX()
-        actor = Actor(model)
+        game = Hex(BOARD_SIZE, rotate_palyer2_for_nn=UNIFORM_PALYER)
+        actor = Actor(model, game=game)
         actor.train()
 
     if args.play:

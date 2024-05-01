@@ -48,11 +48,17 @@ class Topp:
             # self.model_names.append(next_location.split("/")[-1][:-3])
         self.init_scores()
 
-    def play_game(self, palyer1, player2, starting_player=1):
+    def play_game(self, palyer1, player2, starting_player=1, verbose=False):
+
         model1, name1 = palyer1
         model2, name2 = player2
+        assert model1.output_shape == model2.output_shape
+        game = Hex(
+            int(sqrt(model1.output_shape)),
+            rotate_palyer2_for_nn=True if "rotate" in name2 else False,
+        )
 
-        verbose = self.verbose
+        verbose = self.verbose or verbose
         if verbose:
             print(f"Playing game between {name1} and {name2}")
             starting_color = game.get_palyer_color(starting_player)
@@ -62,8 +68,6 @@ class Topp:
             else:
                 print(f"{name2} starts")
 
-        assert model1.output_shape == model2.output_shape
-        game = Hex(int(sqrt(model1.output_shape)))
         game.player_turn = starting_player
         while not game.is_terminal():
             if game.player_turn == 1:
@@ -74,7 +78,9 @@ class Topp:
                 state = game.get_nn_input()
                 pred = model2.predict(state)
                 move = game.get_move_from_nn_output(pred)
+            game.draw_state(pred[0])
             game.make_move(move)
+
         winner = game.check_win()
 
         if verbose:

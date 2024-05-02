@@ -56,9 +56,7 @@ class Node:
         else:
             q_value = node.value / node.visits
         exploration_bonus = self.c * np.sqrt(
-            # np.log(self.node.visits + epsilon) / (node.visits + epsilon)
-            np.log(node.parent.visits)
-            / (node.visits + 1)
+            np.log(node.parent.visits) / (node.visits + 1)
         )
         total_value = (
             q_value + exploration_bonus

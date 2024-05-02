@@ -74,6 +74,7 @@ class Topp:
                 state = game.get_nn_input()
                 pred = model1.predict(state)
                 move = game.get_move_from_nn_output(pred)
+
             else:
                 state = game.get_nn_input()
                 pred = model2.predict(state)

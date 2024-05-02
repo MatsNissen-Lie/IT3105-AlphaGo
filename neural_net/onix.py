@@ -59,7 +59,7 @@ class ONIX:
     def build_model(self) -> keras.models.Model:
         model = keras.Sequential()
 
-        model.add(keras.Input(shape=(self.input_shape,)))
+        model.add(keras.Input(shape=(self.input_shape)))
 
         # Adding hidden layers
         for layer_size in self.layers:

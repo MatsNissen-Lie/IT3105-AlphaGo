@@ -29,7 +29,6 @@ class MCTS:
         return self.root
 
     def select_node(self) -> "Node":
-
         node, _ = self.tree_policy.search(self.root)
         return node
 
@@ -87,7 +86,7 @@ class MCTS:
             terminal_state = policy(leaf_node)
         winner = terminal_state.check_win()
         # we minimize for player 2 and maximize for player 1
-        return winner if winner != 2 else -1
+        return 1 if winner != 2 else -1
 
     def backpropagate(self, node: Node, value):
         while node is not None:

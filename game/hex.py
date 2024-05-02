@@ -195,14 +195,16 @@ class Hex:
         return np.where(board == 1, 1, np.where(board == 2, -1, 0)).flatten()
 
     def get_nn_input(self, isForReplayBuffer=False):
-        new_board = (
-            self.rotate_board(self.board)
-            if self.player_turn == 2 and self.rotate_palyer2_for_nn
-            else self.board
-        )
-        flat_board = self.transform_state_for_nn(new_board)
         format_player = 1 if self.player_turn == 1 else -1
-        nn_input = np.append(flat_board, format_player)
+
+        flat_board = self.transform_state_for_nn(self.board)
+        switch = self.player_turn == 2 and self.rotate_palyer2_for_nn
+        if switch:
+            flat_board = self.rotate_for_nn(flat_board, getIput=True)
+
+        if not self.rotate_palyer2_for_nn:
+            nn_input = np.append(flat_board, format_player)
+
         nn_input = np.array(nn_input, dtype=np.float64)
         if isForReplayBuffer:
             return nn_input
@@ -296,10 +298,19 @@ class Hex:
                 new_board[col][row] = old_borad[row][col]
         return new_board
 
-    def rotate_for_nn(self, nn_output):
-        nn_output = nn_output.reshape(self.board_size, self.board_size)
-        nn_output = self.rotate_board(nn_output)
-        return nn_output.flatten()
+    def rotate_for_nn(self, nn_array, getIput=False):
+        nn_array = nn_array.reshape(self.board_size, self.board_size)
+        nn_array = self.rotate_board(nn_array).flatten()
+        if getIput:
+            nn_array *= -1
+        return nn_array
+
+    def get_input_shape(self):
+        size = self.board_size * self.board_size
+        return size if not self.rotate_palyer2_for_nn else size + 1
+
+    def get_output_shape(self):
+        return self.board_size * self.board_size
 
 
 # Uncomment to test the game setup
@@ -323,7 +334,9 @@ if __name__ == "__main__":
         # revert move
         assert game.player_turn == 2
         game.board[move[0]][move[1]] = 0
-        game.draw_state()
+        game.board = game.rotate_board(game.board)
+        game.draw_state(preds=preds2)
+        game.board = game.rotate_board(game.board)
         move2 = game.get_move_from_nn_output([preds2])
 
         # denne burde ikke være lik?

@@ -153,12 +153,22 @@ class Actor:
 
 if __name__ == "__main__":
     train = True
-    # train = False
+    train = False
+
+    train_continue = True
     test_replaybuffer = False
     test_simulation_time = True
 
     if train:
         # continue traning
+        game = Hex(board_size=BOARD_SIZE, rotate_palyer2_for_nn=UNIFORM_PALYER)
+        anet = ONIX(
+            input_shape=game.get_input_shape(), output_shape=game.get_output_shape()
+        )
+        actor = Actor(anet=anet, game=game)
+        actor.train("kungfu")
+
+    elif train_continue:
         model = load_kreas_model("train_session4", 17, "hex", 7)
         anet = ONIX(model)
         game = Hex(board_size=BOARD_SIZE, rotate_palyer2_for_nn=UNIFORM_PALYER)

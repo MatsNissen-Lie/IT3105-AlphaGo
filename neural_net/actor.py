@@ -158,6 +158,7 @@ if __name__ == "__main__":
     test_simulation_time = True
 
     if train:
+        # continue traning
         model = load_kreas_model("train_session4", 17, "hex", 7)
         anet = ONIX(model)
         game = Hex(board_size=BOARD_SIZE, rotate_palyer2_for_nn=UNIFORM_PALYER)

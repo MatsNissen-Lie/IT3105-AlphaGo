@@ -121,6 +121,15 @@ class Hex:
 
         return False
 
+    def reset(self, starting_player=1):
+        self.board = np.zeros((self.board_size, self.board_size))
+        self.player_turn = starting_player
+        self.action = None
+
+    def clone(self):
+        clone = copy.deepcopy(self)
+        return clone
+
     def get_palyer_color(self, cell_value):
         if int(cell_value) == 1:
             cell_display = f"{Back.BLUE} {Style.RESET_ALL}"
@@ -210,10 +219,6 @@ class Hex:
             return nn_input
         return np.expand_dims(nn_input, axis=0)
 
-    def clone(self):
-        clone = copy.deepcopy(self)
-        return clone
-
     def get_nn_target(self, nodes: List) -> np.ndarray:
         """Get the target distribution of visit counts for the neural network.
 
@@ -263,6 +268,31 @@ class Hex:
                 best_move = (row, col)
         return best_move
 
+    def get_moves_from_nn_output(
+        self, nn_output: np.ndarray
+    ) -> List[Tuple[Tuple[int, int], int]]:
+        """
+        Get moves with probabilities from the output of the neural network.
+
+        Args:
+            nn_output (np.ndarray): The output of the neural network.
+
+        Returns:
+            List[Tuple[Tuple[int, int], int]]: A list of tuples with moves and their probabilities.
+        """
+        nn_output = nn_output[0]
+        # make a 2d array like the board of the nn_output
+        if self.player_turn == 2 and self.rotate_palyer2_for_nn:
+            nn_output = self.rotate_for_nn(nn_output)
+        # get max valid move
+        moves = []
+        for i, prob in enumerate(nn_output):
+            row = i // self.board_size
+            col = i % self.board_size
+            if self.isAvailable_move(row, col):
+                moves.append(((row, col), prob))
+        return moves
+
     def get_nn_player(self):
         return 1 if self.player_turn == 1 else -1
 
@@ -284,11 +314,6 @@ class Hex:
         if self.board_size == 7:
             self.make_move((6, 6))
             self.make_move((6, 1))
-
-    def reset(self, starting_player=1):
-        self.board = np.zeros((self.board_size, self.board_size))
-        self.player_turn = starting_player
-        self.action = None
 
     def rotate_board(self, board):
         old_borad = np.asarray(board)

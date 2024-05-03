@@ -170,7 +170,7 @@ if __name__ == "__main__":
 
     elif train_continue:
         print("Continue training")
-        model = load_kreas_model("train_session4_extended0", 29, "hex", 7)
+        model = load_kreas_model("train_session3", 18, "hex", 7)
         anet = ONIX(model)
         game = Hex(board_size=BOARD_SIZE, rotate_palyer2_for_nn=UNIFORM_PALYER)
         actor = Actor(

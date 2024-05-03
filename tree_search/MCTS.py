@@ -1,3 +1,4 @@
+import math
 import random
 import time
 from typing import List, Tuple
@@ -5,6 +6,7 @@ from config.params import SIMULATIONS, TIME_LIMIT
 from game.game_interface import GameInterface
 from game.hex import Hex
 from game.nim import Nim
+from neural_net.onix import ONIX
 from tree_search.policy import DefaultPolicy, TargetPolicy, TreePlolicy
 from tree_search.node import Node
 from PrettyPrint import PrettyPrintTree
@@ -21,7 +23,7 @@ class MCTS:
         self.root = Node(game)
         self.tree_policy = TreePlolicy()
         self.iteration_limit = iteration_limit
-        self.anet = neural_net
+        self.anet: ONIX = neural_net
         self.time_limit = time_limit
         # self.NN_confidence = 0.3  # Starting value
 
@@ -32,11 +34,18 @@ class MCTS:
         node, _ = self.tree_policy.search(self.root)
         return node
 
-    def expand(self, node: Node):
-        # Get the possible moves from the game state
+    def expand(self, node: Node, epsilon=1):
         possible_moves = node.game_state.get_legal_moves()
-        # random.shuffle(possible_moves)
-        # TODO: Vi kan bruke Anet til å velge hvilke moves vi skal legge til i treet!
+        # if self.anet is None or epsilon > 0.1:
+        # else:
+        #     # TODO: check if this works nicely
+        #     pred = self.anet.predict(node.game_state.get_nn_input())
+        #     moves_and_probs = node.game_state.get_moves_from_nn_output(pred)
+        #     moves_and_probs.sort(key=lambda x: x[1], reverse=True)
+        #     possible_moves = [
+        #         x[0] for x in moves_and_probs[: math.ceil(len(moves_and_probs) / 2)]
+        #     ]
+
         for move in possible_moves:
             old_state = node.game_state.clone()
             old_state.make_move(move)
@@ -104,7 +113,7 @@ class MCTS:
             #     self.draw_tree()
             node = self.select_node()
             if not node.is_terminal():
-                self.expand(node)
+                self.expand(node, epsilon)
 
             value = self.simulate(node, epsilon)
             self.backpropagate(node, value)

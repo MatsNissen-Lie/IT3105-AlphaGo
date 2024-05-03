@@ -81,3 +81,10 @@ class GameInterface(ABC):
         Transform the neural network output to the game move.
         """
         pass
+
+    @abstractmethod
+    def get_moves_from_nn_output(self, nn_output) -> List:
+        """
+        Get the moves from the neural network output.
+        """
+        pass

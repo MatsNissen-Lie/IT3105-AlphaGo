@@ -79,7 +79,6 @@ class Topp:
                 state = game.get_nn_input()
                 pred = model2.predict(state)
                 move = game.get_move_from_nn_output(pred)
-            game.draw_state(pred[0])
             game.make_move(move)
 
         winner = game.check_win()

@@ -24,16 +24,13 @@ def main(args):
 
     if args.tournament:
         tourney = Topp(4, switch_starting_player=True, verbose=False)
-        tourney.load_models(7, "session0", max=5, identifier="model")
         # tourney.load_models(7, "mmv", max=5, identifier="mmv")
-        # tourney.load_models(7, "train_session3", max=5, identifier="explore")
-        # tourney.load_models(7, "train_session4", max=5, identifier="xp")
+        tourney.load_models(7, "train_session3", max=5, identifier="explore")
+        tourney.load_models(7, "train_session4", max=5, identifier="xp")
 
-        # tourney.load_model(7, "train_session2", 1, "20games")
-        # tourney.load_model(7, "train_session1", 3, "model_3")
-
-        # tourney.load_models(7, "rotate0", max=5, identifier="rotated")
-        # tourney.load_models(7, "not_rotated0", max=5, identifier="normal")
+        tourney.load_models(
+            7, "train_session4_extended1", max=10, identifier="extended"
+        )
 
         # load two models and play them against each other
         # tourney.load_model(7, "rotate0", 4, "50rotate")
